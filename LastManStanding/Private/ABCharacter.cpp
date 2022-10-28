@@ -68,7 +68,7 @@ void AABCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	ABAnim = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
-	ABCHECK(nullptr != ABAnim);
+	//ABCHECK(nullptr != ABAnim);
 
 	ABAnim->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
 	//auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
@@ -92,13 +92,13 @@ void AABCharacter::BeginPlay()
 	{
 		ABPlayerController = Cast<AABPlayerController>(GetController());
 		//SetControlMode(EControlMode::Player);
-		ABCHECK(nullptr != ABPlayerController);
+		//ABCHECK(nullptr != ABPlayerController);
 	}
 
 	else
 	{
 		ABAIController = Cast<AABAIController>(GetController());
-		ABCHECK(nullptr != ABAIController);
+		//ABCHECK(nullptr != ABAIController);
 	}
 	SetCharacterState(ECharacterState::READY);
 }
@@ -247,6 +247,7 @@ void AABCharacter::AttackCheck()
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params);
 
+	/*
 #if ENABLE_DRAW_DEBUG
 	FVector TraceVec = GetActorForwardVector() * AttackRange;
 	FVector Center = GetActorLocation() + TraceVec * 0.5f;
@@ -265,17 +266,17 @@ void AABCharacter::AttackCheck()
 		//DrawColor,
 		false,
 		DebugLifeTime);
-	*/ 
+	
 	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerPunch!")); // 플레이어가 펀치하는지 확인용
 
 #endif
-
+ */
 
 	if (bResult)
 	{
 		if (HitResult.Actor.IsValid())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Hit!"));
+			//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Hit!"));
 			//ABAnim->SetDeadAnim();
 			//SetActorEnableCollision(false);
 			//SetCharacterState(ECharacterState::DEAD); // 사망처리
@@ -296,7 +297,7 @@ void AABCharacter::AttackCheck()
 float AABCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	ABLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage);
+	//ABLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage);
 
 	if (FinalDamage > 0.0f) // 일단 맞으면 기절
 	{
@@ -447,7 +448,7 @@ void AABCharacter::PossessedBy(AController* NewController)
 void AABCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	// 어택 변수를 다시 false로 변환한다.
-	ABCHECK(IsAttacking);
+	//ABCHECK(IsAttacking);
 	IsAttacking = false;
 
 	// 캐릭터에 펀치가 맞았을 때
