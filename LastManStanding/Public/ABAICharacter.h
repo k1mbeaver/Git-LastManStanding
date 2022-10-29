@@ -26,4 +26,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION()
+		void CharacterDead(AABAICharacter* DeadCharacter);
+
+	UPROPERTY(VisibleInstanceOnly, Category = Animation)
+		class UABAnimInstance* ABAnim;
+
+	UPROPERTY()
+		class AABAIController* ABAIController;
+
 };

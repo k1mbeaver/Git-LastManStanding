@@ -8,6 +8,7 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "ABCharacter.h"
+#include "ABAICharacter.h"
 
 const FName AABAIController::HomePosKey(TEXT("HomePos"));
 const FName AABAIController::PatrolPosKey(TEXT("PatrolPos"));
@@ -35,6 +36,7 @@ void AABAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	
+	//myAICharacter = Cast<AABAICharacter>(InPawn);
 }
 
 UBlackboardComponent* AABAIController::get_blackboard() const
@@ -58,4 +60,5 @@ void AABAIController::StopAI()
 	}
 
 	BTAsset_Component->StopTree(EBTStopMode::Safe);
+	//myAICharacter->CharacterDead(myAICharacter);
 }

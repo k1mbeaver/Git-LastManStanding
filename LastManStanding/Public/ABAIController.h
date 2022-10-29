@@ -36,4 +36,6 @@ private:
 
 	UPROPERTY()
 		class UBlackboardComponent* BBAsset;
+
+	class AABAICharacter* myAICharacter;
 };

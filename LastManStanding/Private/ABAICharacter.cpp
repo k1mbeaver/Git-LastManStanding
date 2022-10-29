@@ -52,3 +52,8 @@ void AABAICharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
+void AABAICharacter::CharacterDead(AABAICharacter* DeadCharacter)
+{
+	DeadCharacter->ABAnim->SetDeadAnim();
+}
+
