@@ -28,14 +28,28 @@ AABAICharacter::AABAICharacter()
 		GetMesh()->SetAnimInstanceClass(PLAYER_ANIM.Class);
 	}
 
+	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+
+	AIControllerClass = AABAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	SetActorHiddenInGame(false);
 
 }
+
+void AABAICharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	ABAnim = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
+}
+
 
 // Called when the game starts or when spawned
 void AABAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	ABAIController = Cast<AABAIController>(GetController());
 }
 
 // Called every frame
