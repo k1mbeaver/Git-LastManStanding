@@ -263,7 +263,6 @@ void AABPlayerController::StopRun()
 {
 	//APawn* const myPawn = GetPawn();
 	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
-
 	//myCharacter->GetCharacterMovement()->MaxWalkSpeed /= myCharacter->fSprintSpeedMultiPlayer;
 
 
