@@ -58,8 +58,8 @@ AABCharacter::AABCharacter()
 	nNowPlayer = 0;
 	//DeathCharacter = NULL; // 일단 죽은 캐릭터는 없다는 
 
-	AIControllerClass = AABAIController::StaticClass();
-	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	//AIControllerClass = AABAIController::StaticClass();
+	//AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	SetActorHiddenInGame(false);
 }

@@ -5,26 +5,26 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Engine/DataTable.h"
-#include "MeshDataTableClass.generated.h"
+#include "SoundDataTableClass.generated.h"
 
 USTRUCT(BlueprintType)
-struct FMeshDataTable : public FTableRowBase
+struct FSoundDataTable : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USkeletalMesh* MySkeletalMesh;
+		USoundWave* MySound;
 };
 
 UCLASS()
-class LASTMANSTANDING_API AMeshDataTableClass : public AActor
+class LASTMANSTANDING_API ASoundDataTableClass : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AMeshDataTableClass();
+	ASoundDataTableClass();
 
 protected:
 	// Called when the game starts or when spawned

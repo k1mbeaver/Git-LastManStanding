@@ -24,8 +24,21 @@ public:
 	void SetUserName(FString Player, FString UserName);
 	int GetIsServer(FString Player);
 	void SetIsServer(FString Player, int ServerAndClient);
+	USoundWave* GetSound(FString SoundName);
+	USkeletalMesh* GetSkeletalMesh(FString MeshName);
+	FString GetMapName(FString MapName);
+	int GetMonsterSize(FString MapName);
 
 private:
 	UPROPERTY()
 		UDataTable* FPlayerTable;
+
+	UPROPERTY()
+		UDataTable* FSoundTable;
+
+	UPROPERTY()
+		UDataTable* FMapTable;
+
+	UPROPERTY()
+		UDataTable* FMeshTable;
 };
