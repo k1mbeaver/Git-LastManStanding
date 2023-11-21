@@ -22,11 +22,14 @@ void AABPlayerController::PostInitializeComponents()
 void AABPlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
-	myPawn = aPawn;
-	myCharacter = Cast<AABCharacter>(myPawn);
-	myCharacter->MyCharacterDead.AddUObject(this, &AABPlayerController::PlayerKill); // 내 캐릭터가 죽었다는 델리게이트 함수가 발생하면?
 
-	PlayerEnter();
+	if (aPawn)
+	{
+		myCharacter = Cast<AABCharacter>(aPawn);
+		myCharacter->MyCharacterDead.AddUObject(this, &AABPlayerController::PlayerKill); // 내 캐릭터가 죽었다는 델리게이트 함수가 발생하면?
+		PlayerEnter();
+		SetInputMode(FInputModeGameOnly());
+	}
 }
 
 void AABPlayerController::PlayerEnter()
@@ -147,7 +150,7 @@ void AABPlayerController::SetupInputComponent()
 	// 액션
 
 	InputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AABPlayerController::Jump);
-	InputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Released, this, &AABPlayerController::CheckMission);
+	InputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Released, this, &AABPlayerController::StopJumping);
 	InputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AABPlayerController::Attack);
 	InputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Pressed, this, &AABPlayerController::Run);
 	InputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Released, this, &AABPlayerController::StopRun);
@@ -157,46 +160,51 @@ void AABPlayerController::SetupInputComponent()
 /*
 void AABPlayerController::UpDown(float NewAxisValue)
 {
-	APawn* const myPawn = GetPawn();
-	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
-	//myPawn->AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), NewAxisValue);
+	if (myCharacter != nullptr)
+	{
+		myCharacter->UpDown(NewAxisValue);
+	}
 }
 
 void AABPlayerController::LeftRight(float NewAxisValue)
 {
-	APawn* const myPawn = GetPawn();
-	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
-	//myPawn->AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), NewAxisValue);
+	if (myCharacter != nullptr)
+	{
+		myCharacter->LeftRight(NewAxisValue);
+	}
 }
 
 
 void AABPlayerController::LookUp(float NewAxisValue)
 {
-	APawn* const myPawn = GetPawn();
-	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
-	//myPawn->AddControllerPitchInput(NewAxisValue);
+	if (myCharacter != nullptr)
+	{
+		myCharacter->LookUp(NewAxisValue);
+	}
 }
 
 void AABPlayerController::Turn(float NewAxisValue)
 {
-	APawn* const myPawn = GetPawn();
-	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
-	//myPawn->AddControllerYawInput(NewAxisValue);
+	if (myCharacter != nullptr)
+	{
+		myCharacter->Turn(NewAxisValue);
+	}
 }
 */
 // 액션 함수
 
-
 void AABPlayerController::Jump()
 {
-	//APawn* const myPawn = GetPawn();
-	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
-	//ABCharacter = Cast <AABCharacter>(ABPawn);
-	if (myCharacter->CurrentState == ECharacterState::READY)
-	{
-		myCharacter->bPressedJump = true;
-		myCharacter->JumpKeyHoldTime = 0.0f;
-	}
+	if (myCharacter == nullptr) return;
+
+	myCharacter->Jump();
+}
+
+void AABPlayerController::StopJumping()
+{
+	if (myCharacter == nullptr) return;
+
+	myCharacter->StopJumping();
 }
 
 void AABPlayerController::CheckMission()

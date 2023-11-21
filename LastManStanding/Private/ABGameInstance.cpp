@@ -83,6 +83,14 @@ USkeletalMesh* UABGameInstance::GetSkeletalMesh(FString MeshName)
 	return mySkeletalMesh;
 }
 
+TSubclassOf<class UAnimInstance> UABGameInstance::GetAninInstance(FString MeshName)
+{
+	FMeshDataTable* MeshData = FMeshTable->FindRow<FMeshDataTable>(*MeshName, TEXT(""));
+	TSubclassOf<class UAnimInstance> myAnim = MeshData->MyAnimation;
+	return myAnim;
+}
+
+
 FString UABGameInstance::GetMapName(FString MapName)
 {
 	FMapDataTable* MapData = FMapTable->FindRow<FMapDataTable>(*MapName, TEXT(""));

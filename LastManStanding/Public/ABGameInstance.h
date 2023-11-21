@@ -26,6 +26,7 @@ public:
 	void SetIsServer(FString Player, int ServerAndClient);
 	USoundWave* GetSound(FString SoundName);
 	USkeletalMesh* GetSkeletalMesh(FString MeshName);
+	TSubclassOf<class UAnimInstance> GetAninInstance(FString MeshName);
 	FString GetMapName(FString MapName);
 	int GetMonsterSize(FString MapName);
 

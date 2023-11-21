@@ -15,6 +15,9 @@ struct FMeshDataTable : public FTableRowBase
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USkeletalMesh* MySkeletalMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UAnimInstance> MyAnimation;
 };
 
 UCLASS()
