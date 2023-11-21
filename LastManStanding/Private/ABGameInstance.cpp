@@ -3,6 +3,9 @@
 
 #include "ABGameInstance.h"
 #include "ACustoDataTables.h"
+#include "SoundDataTableClass.h"
+#include "MapDataTableClass.h"
+#include "MeshDataTableClass.h"
 
 UABGameInstance::UABGameInstance()
 {
@@ -11,6 +14,28 @@ UABGameInstance::UABGameInstance()
 	if (DT_ABPLAYER.Succeeded())
 	{
 		FPlayerTable = DT_ABPLAYER.Object;
+	}
+
+	
+	FString MapDataPath = TEXT("DataTable'/Game/DataTable/MapDataTable.MapDataTable'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_MAP(*MapDataPath);
+	if (DT_MAP.Succeeded())
+	{
+		FMapTable = DT_MAP.Object;
+	}
+
+	FString MeshDataPath = TEXT("DataTable'/Game/DataTable/MeshDataTable.MeshDataTable'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_MESH(*MeshDataPath);
+	if (DT_MESH.Succeeded())
+	{
+		FMeshTable = DT_MESH.Object;
+	}
+
+	FString SoundDataPath = TEXT("DataTable'/Game/DataTable/SoundDataTable.SoundDataTable'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SOUND(*SoundDataPath);
+	if (DT_SOUND.Succeeded())
+	{
+		FSoundTable = DT_SOUND.Object;
 	}
 }
 
@@ -42,4 +67,40 @@ void UABGameInstance::SetIsServer(FString Player, int ServerAndClient)
 	PlayerData->IsServer = ServerAndClient;
 
 	// 일단 여기까지 하고 대기방 구현후 다시 진행하자
+}
+
+USoundWave* UABGameInstance::GetSound(FString SoundName)
+{
+	FSoundDataTable* SoundData = FSoundTable->FindRow<FSoundDataTable>(*SoundName, TEXT(""));
+	USoundWave* mySound = SoundData->MySound;
+	return mySound;
+}
+
+USkeletalMesh* UABGameInstance::GetSkeletalMesh(FString MeshName)
+{
+	FMeshDataTable* MeshData = FMeshTable->FindRow<FMeshDataTable>(*MeshName, TEXT(""));
+	USkeletalMesh* mySkeletalMesh = MeshData->MySkeletalMesh;
+	return mySkeletalMesh;
+}
+
+TSubclassOf<class UAnimInstance> UABGameInstance::GetAninInstance(FString MeshName)
+{
+	FMeshDataTable* MeshData = FMeshTable->FindRow<FMeshDataTable>(*MeshName, TEXT(""));
+	TSubclassOf<class UAnimInstance> myAnim = MeshData->MyAnimation;
+	return myAnim;
+}
+
+
+FString UABGameInstance::GetMapName(FString MapName)
+{
+	FMapDataTable* MapData = FMapTable->FindRow<FMapDataTable>(*MapName, TEXT(""));
+	FString myMapName = MapData->MapName;
+	return myMapName;
+}
+
+int UABGameInstance::GetMonsterSize(FString MapName)
+{
+	FMapDataTable* MapData = FMapTable->FindRow<FMapDataTable>(*MapName, TEXT(""));
+	int MonsterSize = MapData->AISize;
+	return MonsterSize;
 }

@@ -5,29 +5,29 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Engine/DataTable.h"
-#include "MeshDataTableClass.generated.h"
+#include "MapDataTableClass.generated.h"
 
 USTRUCT(BlueprintType)
-struct FMeshDataTable : public FTableRowBase
+struct FMapDataTable : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USkeletalMesh* MySkeletalMesh;
+		FString MapName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UAnimInstance> MyAnimation;
+		int AISize;
 };
 
 UCLASS()
-class LASTMANSTANDING_API AMeshDataTableClass : public AActor
+class LASTMANSTANDING_API AMapDataTableClass : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AMeshDataTableClass();
+	AMapDataTableClass();
 
 protected:
 	// Called when the game starts or when spawned

@@ -81,14 +81,16 @@ private:
 		//void StoC_Attack();
 	UPROPERTY()
 		class UABAnimInstance* ABAnimInstance;
-	//void UpDown(float NewAxisValue);
-	//void LeftRight(float NewAxisValue);
-	//void LookUp(float NewAxisValue);
-	//void Turn(float NewAxisValue);
+	void UpDown(float NewAxisValue);
+	void LeftRight(float NewAxisValue);
+	void LookUp(float NewAxisValue);
+	void Turn(float NewAxisValue);
 
 	// 점프 함수
 
 	void Jump();
+
+	void StopJumping();
 
 	void CheckMission();
 

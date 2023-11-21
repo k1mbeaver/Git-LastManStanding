@@ -58,8 +58,8 @@ AABCharacter::AABCharacter()
 	nNowPlayer = 0;
 	//DeathCharacter = NULL; // 일단 죽은 캐릭터는 없다는 
 
-	AIControllerClass = AABAIController::StaticClass();
-	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	//AIControllerClass = AABAIController::StaticClass();
+	//AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	SetActorHiddenInGame(false);
 }
@@ -95,11 +95,6 @@ void AABCharacter::BeginPlay()
 		//ABCHECK(nullptr != ABPlayerController);
 	}
 
-	else
-	{
-		ABAIController = Cast<AABAIController>(GetController());
-		//ABCHECK(nullptr != ABAIController);
-	}
 	SetCharacterState(ECharacterState::READY);
 }
 
@@ -116,29 +111,22 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AABCharacter::UpDown);
-	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AABCharacter::LeftRight);
-	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &AABCharacter::LookUp);
-	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &AABCharacter::Turn);
-	//PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ACharacter::Jump);
-	//PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AABCharacter::Attack);
-	//PlayerInputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Pressed, this, &AABCharacter::Run);
-	//PlayerInputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Released, this, &AABCharacter::StopRun);
+	InputComponent->BindAxis(TEXT("UpDown"), this, &AABCharacter::UpDown);
+	InputComponent->BindAxis(TEXT("LeftRight"), this, &AABCharacter::LeftRight);
+	InputComponent->BindAxis(TEXT("LookUp"), this, &AABCharacter::LookUp);
+	InputComponent->BindAxis(TEXT("Turn"), this, &AABCharacter::Turn);
 }
 
 
 void AABCharacter::UpDown(float NewAxisValue)
 {
-	//if (IsControlledPlayer == false)
-	//{
-	//	CtoS_MultiIsPlayer();
-	//}
-
 	if (CurrentState == ECharacterState::READY)
 	{
 		FVector Direction = FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X);
 		Direction.Z = 0.0f;
 		Direction.Normalize();
+		UE_LOG(LogTemp, Warning, TEXT("X : %f, Y : %f, Z : %f"), Direction.X, Direction.Y, Direction.Z);
+		UE_LOG(LogTemp, Warning, TEXT("UpDown: %f"), NewAxisValue);
 		AddMovementInput(Direction, NewAxisValue);
 	}
 }
@@ -166,15 +154,7 @@ void AABCharacter::LookUp(float NewAxisValue)
 		//CtoS_MultiIsPlayer();
 	//}
 
-	if (CurrentState == ECharacterState::READY)
-	{
-		AddControllerPitchInput(NewAxisValue);
-	}
-
-	else
-	{
-		AddControllerPitchInput(NewAxisValue);
-	}
+	AddControllerPitchInput(NewAxisValue);
 }
 
 void AABCharacter::Turn(float NewAxisValue)
@@ -185,13 +165,22 @@ void AABCharacter::Turn(float NewAxisValue)
 		CtoS_MultiIsPlayer();
 	}
 	*/
-	if (CurrentState == ECharacterState::READY)
+	AddControllerYawInput(NewAxisValue);
+}
+
+void AABCharacter::Jump()
+{
+	if (ABPlayerController != nullptr)
 	{
-		AddControllerYawInput(NewAxisValue);
+		Super::Jump();
 	}
-	else
+}
+
+void AABCharacter::StopJumping()
+{
+	if (ABPlayerController != nullptr)
 	{
-		AddControllerYawInput(NewAxisValue);
+		Super::StopJumping();
 	}
 }
 
@@ -407,12 +396,6 @@ void AABCharacter::SetControlMode(EControlMode NewControlMode)
 		GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 
 		break;
-	case EControlMode::NPC:
-		bUseControllerRotationYaw = false;
-		GetCharacterMovement()->bUseControllerDesiredRotation = false;
-		GetCharacterMovement()->bOrientRotationToMovement = true;
-		GetCharacterMovement()->RotationRate = FRotator(0.0f, 480.0f, 0.0f);
-		break;
 	}
 }
 
@@ -476,20 +459,11 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 		SetActorHiddenInGame(false);
 		if (bIsPlayer) // 플레이어일 경우
 		{
-			(EControlMode::Player);
+			//(EControlMode::Player);
 			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 			SetActorLocation(GiveFVector()); // 랜덤배치
 			EnableInput(ABPlayerController);
 		}
-
-		else // AI일 경우
-		{
-			SetControlMode(EControlMode::NPC);
-			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
-			SetActorLocation(GiveFVector()); // 랜덤배치
-			ABAIController->RunAI();
-		}
-		break;
 	}
 	case ECharacterState::DEAD:
 	{
@@ -497,11 +471,6 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 		if (IsControlledPlayer == true)
 		{
 			//CtoS_PlayerDeadCheck();
-		}
-
-		else
-		{
-			ABAIController->StopAI();
 		}
 		MyCharacterDead.Broadcast();
 		break;
@@ -570,7 +539,7 @@ FVector AABCharacter::GiveFVector()
 	nDestinationX = RandomTransform(-3300, 2500);
 	nDestinationY = RandomTransform(-2850, 2850);
 
-	return FVector(nDestinationX, nDestinationY, 218);
+	return FVector(nDestinationX, nDestinationY, 250);
 }
 
 

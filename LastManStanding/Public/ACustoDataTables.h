@@ -13,13 +13,16 @@ struct FPlayerData : public FTableRowBase
 	GENERATED_BODY()
 
 public:
-	FPlayerData() : NickName("Player2"), IsServer(1) {}
+	FPlayerData() : NickName("Player2"), IsServer(1), MapName("") {}
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		FString NickName;
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		int IsServer;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+			FString MapName;
 };
 UCLASS()
 class LASTMANSTANDING_API AACustoDataTables : public AActor

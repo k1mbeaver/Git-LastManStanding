@@ -6,6 +6,8 @@
 #include "ABAIController.h"
 #include "ABPlayerController.h"
 #include "GameMain_HUD.h"
+#include "MyCharacter.h"
+#include "MyPlayerController.h"
 
 /*
 1. 플레이어 컨트롤러의 생성, AI 컨트롤러의 생성
@@ -15,8 +17,10 @@
 */
 AABGameMode::AABGameMode()
 {
-	DefaultPawnClass = AABCharacter::StaticClass();
-	PlayerControllerClass = AABPlayerController::StaticClass();
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("Blueprint'/Game/BluePrint/BP_MyCharacter.BP_MyCharacter_C'"));
+	DefaultPawnClass = PlayerPawnClassFinder.Class;
+
+	PlayerControllerClass = AMyPlayerController::StaticClass();
 	HUDClass = AGameMain_HUD::StaticClass();
 
 }

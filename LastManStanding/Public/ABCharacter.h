@@ -48,6 +48,17 @@ public:
     void SetCharacterState(ECharacterState NewState);
 	ECharacterState GetCharacterState() const;
 
+	void UpDown(float NewAxisValue);
+
+	void LeftRight(float NewAxisValue);
+
+	void LookUp(float NewAxisValue);
+
+	void Turn(float NewAxisValue);
+
+	virtual void Jump() override;
+
+	virtual void StopJumping() override;
 	
 	//UFUNCTION(Server, Reliable)
 		//void CtoS_AttackCheck();
@@ -153,14 +164,4 @@ private:
 		class AABAIController* ABAIController;
 	UPROPERTY()
 		class AABPlayerController* ABPlayerController;
-	//UFUNCTION(NetMulticast, Reliable)
-	void UpDown(float NewAxisValue);
-	//UFUNCTION(NetMulticast, Reliable)
-	void LeftRight(float NewAxisValue);
-	//UFUNCTION(NetMulticast, Reliable)
-	void LookUp(float NewAxisValue);
-	//UFUNCTION(NetMulticast, Reliable)
-	void Turn(float NewAxisValue);
-
-
 };
