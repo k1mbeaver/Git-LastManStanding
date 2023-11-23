@@ -23,17 +23,20 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class UCameraComponent* Camera;
 
-	UPROPERTY(VisibleAnywhere, Category = Animation)
+	UPROPERTY(VisibleAnywhere, Replicated, Category = Animation)
 		class UABAnimInstance* CharacterAnim;
 
 	UPROPERTY(VisibleAnywhere, Replicated, Category = Mesh)
-		class USkeletalMeshComponent* SkeletalMesh;
+		class USkeletalMeshComponent* mySkeletalMesh;
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class USpringArmComponent* SpringArm;
 
 	UPROPERTY()
 		class AMyPlayerController* MyPC;
+
+	UPROPERTY(Replicated)
+		float fCurrentPawnSpeed;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

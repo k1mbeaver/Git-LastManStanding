@@ -21,16 +21,13 @@ AMyCharacter::AMyCharacter()
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
-	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESH"));
+	mySkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MYMESH"));
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
-	SkeletalMesh->SetupAttachment(GetCapsuleComponent());
+	mySkeletalMesh->SetupAttachment(GetCapsuleComponent());
 
-	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f));
-
-	GetCharacterMovement()->JumpZVelocity = 400.0f;
-	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+	mySkeletalMesh->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f));
 
 	// 회전속도를 함께 지정해 이동 방향으로 캐릭터가 부드럽게 회저하도록 기능을 추가한다.
 	// 캐릭터가 자연스럽게 회전하게 
@@ -46,9 +43,14 @@ void AMyCharacter::BeginPlay()
 	
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 
-	GetMesh()->SetSkeletalMesh(MyGI->GetSkeletalMesh("Default"));
-	GetMesh()->SetAnimInstanceClass(MyGI->GetAninInstance("Default"));
+	mySkeletalMesh->SetSkeletalMesh(MyGI->GetSkeletalMesh("Default"));
+	mySkeletalMesh->SetAnimInstanceClass(MyGI->GetAninInstance("Default"));
 
+	fCurrentPawnSpeed = 200.0f;
+	GetCharacterMovement()->JumpZVelocity = 400.0f;
+	GetCharacterMovement()->MaxWalkSpeed = fCurrentPawnSpeed;
+	
+	/*
 	SpringArm->TargetArmLength = 450.0f;
 	SpringArm->SetRelativeRotation(FRotator::ZeroRotator);
 	SpringArm->bUsePawnControlRotation = true;
@@ -57,6 +59,7 @@ void AMyCharacter::BeginPlay()
 	SpringArm->bInheritYaw = true;
 	SpringArm->bDoCollisionTest = true;
 	bUseControllerRotationYaw = false;
+	*/
 }
 
 // Called every frame
@@ -130,7 +133,7 @@ void AMyCharacter::Run()
 		return;
 	}
 
-	GetCharacterMovement()->MaxWalkSpeed *= 2.0f;
+	GetCharacterMovement()->MaxWalkSpeed = fCurrentPawnSpeed * 2.0f;
 }
 
 void AMyCharacter::StopRun()
@@ -139,7 +142,7 @@ void AMyCharacter::StopRun()
 	{
 		return;
 	}
-	GetCharacterMovement()->MaxWalkSpeed /= 2.0f;
+	GetCharacterMovement()->MaxWalkSpeed = fCurrentPawnSpeed / 2.0f;
 }
 
 void AMyCharacter::Jump()
@@ -166,5 +169,7 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DOREPLIFETIME(AMyCharacter, bCanRun);
+	DOREPLIFETIME(AMyCharacter, fCurrentPawnSpeed);
+	DOREPLIFETIME(AMyCharacter, CharacterAnim);
+	DOREPLIFETIME(AMyCharacter, mySkeletalMesh);
 }

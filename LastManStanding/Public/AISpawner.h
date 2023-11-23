@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Net/UnrealNetwork.h"
 #include "AISpawner.generated.h"
 
 UCLASS()
@@ -21,6 +22,8 @@ protected:
 
 	int nSizeMonster = 0;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -28,4 +31,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		int GetMonsterSize();
 
+	UFUNCTION(BlueprintCallable)
+		bool CanSpawn();
 };
