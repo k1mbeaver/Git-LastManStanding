@@ -6,6 +6,7 @@
 #include "SoundDataTableClass.h"
 #include "MapDataTableClass.h"
 #include "MeshDataTableClass.h"
+#include "AnimationDataTableClass.h"
 
 UABGameInstance::UABGameInstance()
 {
@@ -36,6 +37,13 @@ UABGameInstance::UABGameInstance()
 	if (DT_SOUND.Succeeded())
 	{
 		FSoundTable = DT_SOUND.Object;
+	}
+
+	FString AnimationDataPath = TEXT("DataTable'/Game/DataTable/AnimationDataTable.AnimationDataTable'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ANIMATION(*AnimationDataPath);
+	if (DT_ANIMATION.Succeeded())
+	{
+		FAnimationTable = DT_ANIMATION.Object;
 	}
 }
 
@@ -103,4 +111,11 @@ int UABGameInstance::GetMonsterSize(FString MapName)
 	FMapDataTable* MapData = FMapTable->FindRow<FMapDataTable>(*MapName, TEXT(""));
 	int MonsterSize = MapData->AISize;
 	return MonsterSize;
+}
+
+UAnimMontage* UABGameInstance::GetMontage(FString AnimationName)
+{
+	FAnimationDataTable* AnimationData = FAnimationTable->FindRow<FAnimationDataTable>(*AnimationName, TEXT(""));
+	UAnimMontage* myMontage = AnimationData->MyMontage;
+	return myMontage;
 }

@@ -4,33 +4,34 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Net/UnrealNetwork.h"
-#include "AISpawner.generated.h"
+#include "Engine/DataTable.h"
+#include "AnimationDataTableClass.generated.h"
+
+USTRUCT(BlueprintType)
+struct FAnimationDataTable : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UAnimMontage* MyMontage;
+};
 
 UCLASS()
-class LASTMANSTANDING_API AAISpawner : public AActor
+class LASTMANSTANDING_API AAnimationDataTableClass : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AAISpawner();
+	AAnimationDataTableClass();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	int nSizeMonster = 0;
-
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable)
-		int GetMonsterSize();
-
-	UFUNCTION(BlueprintCallable)
-		bool CanSpawn();
 };

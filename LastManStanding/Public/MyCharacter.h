@@ -23,17 +23,29 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class UCameraComponent* Camera;
 
-	UPROPERTY(VisibleAnywhere, Category = Animation)
+	UPROPERTY(VisibleAnywhere, Replicated, Category = Animation)
 		class UABAnimInstance* CharacterAnim;
 
 	UPROPERTY(VisibleAnywhere, Replicated, Category = Mesh)
-		class USkeletalMeshComponent* SkeletalMesh;
+		class USkeletalMeshComponent* mySkeletalMesh;
+
+	UPROPERTY(VisibleAnywhere, Replicated, Category = Mesh)
+		class UAnimMontage* AttackMontage;
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class USpringArmComponent* SpringArm;
 
 	UPROPERTY()
 		class AMyPlayerController* MyPC;
+
+	UPROPERTY(Replicated)
+		float fCurrentPawnSpeed;
+
+	UPROPERTY(Replicated)
+		float AttackRange;
+
+	UPROPERTY(Replicated)
+		float AttackRadius;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -41,6 +53,8 @@ protected:
 private:
 	UPROPERTY()
 		class UGameplayStatics* GameStatic;
+
+	bool IsAttacking = false;
 
 public:	
 	AMyCharacter();
@@ -67,4 +81,6 @@ public:
 	virtual void Jump() override;
 
 	virtual void StopJumping() override;
+
+	void Attack();
 };

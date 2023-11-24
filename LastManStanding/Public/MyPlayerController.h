@@ -21,6 +21,7 @@ public:
 	virtual void OnPossess(APawn* aPawn) override;
 	virtual void PostInitializeComponents() override; // 여기서 빙의되는지 알 수 있음
 	virtual void SetupInputComponent() override;
+	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 	virtual void Tick(float DeltaTime) override;
 
@@ -41,8 +42,37 @@ private:
 
 	void StopJumping();
 
+public:
 	// 여기서 부터는 RPC 함수 사용해서 진행
-	//void Run();
+	void PlayerEnter();
 
-	//void StopRun();
+	UFUNCTION(Server, Unreliable)
+		void PlayerEnterToServer(AMyCharacter* PlayCharacter);
+
+	UFUNCTION(Client, Unreliable)
+		void PlayerEnterToClient(AMyCharacter* PlayCharacter);
+
+	void Run();
+
+	UFUNCTION(Server, Unreliable)
+		void RunToServer(AMyCharacter* PlayCharacter);
+
+	UFUNCTION(Client, Unreliable)
+		void RunToClient(AMyCharacter* PlayCharacter);
+
+	void StopRun();
+
+	UFUNCTION(Server, Unreliable)
+		void StopRunToServer(AMyCharacter* PlayCharacter);
+
+	UFUNCTION(Client, Unreliable)
+		void StopRunToClient(AMyCharacter* PlayCharacter);
+
+	void Attack();
+
+	UFUNCTION(Server, Unreliable)
+		void AttackToServer(AMyCharacter* PlayCharacter);
+
+	UFUNCTION(Client, Unreliable)
+		void AttackToClient(AMyCharacter* PlayCharacter);
 };

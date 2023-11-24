@@ -12,6 +12,7 @@
 #include "ABAnimInstance.h"
 #include "ABGameInstance.h"
 #include "MyPlayerController.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -21,16 +22,16 @@ AMyCharacter::AMyCharacter()
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
-	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESH"));
+	mySkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MYMESH"));
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
-	SkeletalMesh->SetupAttachment(GetCapsuleComponent());
+	mySkeletalMesh->SetupAttachment(GetCapsuleComponent());
 
-	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f));
+	mySkeletalMesh->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f));
 
-	GetCharacterMovement()->JumpZVelocity = 400.0f;
-	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+	AttackRange = 50.0f;
+	AttackRadius = 25.0;
 
 	// 회전속도를 함께 지정해 이동 방향으로 캐릭터가 부드럽게 회저하도록 기능을 추가한다.
 	// 캐릭터가 자연스럽게 회전하게 
@@ -46,9 +47,16 @@ void AMyCharacter::BeginPlay()
 	
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 
-	GetMesh()->SetSkeletalMesh(MyGI->GetSkeletalMesh("Default"));
-	GetMesh()->SetAnimInstanceClass(MyGI->GetAninInstance("Default"));
+	mySkeletalMesh->SetSkeletalMesh(MyGI->GetSkeletalMesh("Default"));
+	mySkeletalMesh->SetAnimInstanceClass(MyGI->GetAninInstance("Default"));
+	CharacterAnim = Cast<UABAnimInstance>(mySkeletalMesh->GetAnimInstance());
+	AttackMontage = MyGI->GetMontage("Attack");
 
+	fCurrentPawnSpeed = 200.0f;
+	GetCharacterMovement()->JumpZVelocity = 400.0f;
+	GetCharacterMovement()->MaxWalkSpeed = fCurrentPawnSpeed;
+	
+	/*
 	SpringArm->TargetArmLength = 450.0f;
 	SpringArm->SetRelativeRotation(FRotator::ZeroRotator);
 	SpringArm->bUsePawnControlRotation = true;
@@ -57,6 +65,7 @@ void AMyCharacter::BeginPlay()
 	SpringArm->bInheritYaw = true;
 	SpringArm->bDoCollisionTest = true;
 	bUseControllerRotationYaw = false;
+	*/
 }
 
 // Called every frame
@@ -130,7 +139,7 @@ void AMyCharacter::Run()
 		return;
 	}
 
-	GetCharacterMovement()->MaxWalkSpeed *= 2.0f;
+	GetCharacterMovement()->MaxWalkSpeed = fCurrentPawnSpeed * 2.0f;
 }
 
 void AMyCharacter::StopRun()
@@ -139,7 +148,7 @@ void AMyCharacter::StopRun()
 	{
 		return;
 	}
-	GetCharacterMovement()->MaxWalkSpeed /= 2.0f;
+	GetCharacterMovement()->MaxWalkSpeed = fCurrentPawnSpeed / 2.0f;
 }
 
 void AMyCharacter::Jump()
@@ -162,9 +171,71 @@ void AMyCharacter::StopJumping()
 	Super::StopJumping();
 }
 
+void AMyCharacter::Attack()
+{
+	if (this == nullptr)
+	{
+		return;
+	}
+
+	if (IsAttacking == true)
+	{
+		return;
+	}
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+
+	CharacterAnim->PlayAttackMontage(AttackMontage);
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params(NAME_None, false, this);
+	bool bResult = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		GetActorLocation(),
+		GetActorLocation() + GetActorForwardVector() * AttackRange,
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel2, // Attack 채널 
+		FCollisionShape::MakeSphere(AttackRadius),
+		Params);
+
+	
+#if ENABLE_DRAW_DEBUG
+	FVector TraceVec = GetActorForwardVector() * AttackRange;
+	FVector Center = GetActorLocation() + TraceVec * 0.5f;
+	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+	FColor DrawColor = bResult ? FColor::Green : FColor::Red;
+	float DebugLifeTime = 5.0f;
+
+	// 이거는 에디터에서만 사용하는거
+	
+	DrawDebugCapsule(GetWorld(),
+		Center,
+		HalfHeight,
+		AttackRadius,
+		CapsuleRot,
+		DrawColor,
+		false,
+		DebugLifeTime);
+
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerPunch!")); // 플레이어가 펀치하는지 확인용
+
+#endif
+
+	if (bResult)
+	{
+		if (HitResult.Actor.IsValid())
+		{
+
+		}
+	}
+}
+
 void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DOREPLIFETIME(AMyCharacter, bCanRun);
+	DOREPLIFETIME(AMyCharacter, fCurrentPawnSpeed);
+	DOREPLIFETIME(AMyCharacter, CharacterAnim);
+	DOREPLIFETIME(AMyCharacter, mySkeletalMesh);
+	DOREPLIFETIME(AMyCharacter, AttackMontage);
 }

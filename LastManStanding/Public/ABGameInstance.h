@@ -29,6 +29,7 @@ public:
 	TSubclassOf<class UAnimInstance> GetAninInstance(FString MeshName);
 	FString GetMapName(FString MapName);
 	int GetMonsterSize(FString MapName);
+	UAnimMontage* GetMontage(FString MontageName);
 
 private:
 	UPROPERTY()
@@ -42,4 +43,7 @@ private:
 
 	UPROPERTY()
 		UDataTable* FMeshTable;
+
+	UPROPERTY()
+		UDataTable* FAnimationTable;
 };

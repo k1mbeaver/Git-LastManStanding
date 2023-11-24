@@ -22,9 +22,8 @@ void AMyPlayerController::OnPossess(APawn* aPawn)
 	{
 		myCharacter = Cast<AMyCharacter>(aPawn);
 		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Success!"));
-		SetInputMode(FInputModeGameOnly());
 		myCharacter->MyPC = this;
-		myCharacter->EnableInput(this);
+		PlayerEnter();
 	}
 }
 
@@ -34,6 +33,15 @@ void AMyPlayerController::PostInitializeComponents()
 
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Possess!"));
 }
+
+void AMyPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SetShowMouseCursor(false);
+	SetInputMode(FInputModeGameOnly());
+}
+
 
 void AMyPlayerController::Tick(float DeltaTime)
 {
@@ -53,12 +61,15 @@ void AMyPlayerController::SetupInputComponent()
 	InputComponent->BindAxis(TEXT("Turn"), this, &AMyPlayerController::Turn);
 
 	//캐릭터 달리기
-	//InputComponent->BindAction(TEXT("Run"), IE_Pressed, this, &AMyPlayerController::Run);
-	//InputComponent->BindAction(TEXT("Run"), IE_Released, this, &AMyPlayerController::StopRun);
+	InputComponent->BindAction(TEXT("Run"), IE_Pressed, this, &AMyPlayerController::Run);
+	InputComponent->BindAction(TEXT("Run"), IE_Released, this, &AMyPlayerController::StopRun);
 
 	// 캐릭터 점프
 	InputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &AMyPlayerController::Jump);
 	InputComponent->BindAction(TEXT("Jump"), IE_Released, this, &AMyPlayerController::StopJumping);
+
+	// 캐릭터 공격
+	InputComponent->BindAction(TEXT("Attack"), IE_Pressed, this, &AMyPlayerController::Attack);
 }
 
 void AMyPlayerController::UpDown(float NewAxisValue)
@@ -107,6 +118,140 @@ void AMyPlayerController::StopJumping()
 	{
 		myCharacter->StopJumping();
 	}
+}
+
+void AMyPlayerController::PlayerEnter()
+{
+	if (myCharacter)
+	{
+		PlayerEnterToServer(myCharacter);
+	}
+}
+
+void AMyPlayerController::PlayerEnterToServer_Implementation(AMyCharacter* PlayCharacter)
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	for (AActor* OutActor : OutActors)
+	{
+		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+		if (PC)
+		{
+			PlayCharacter->fCurrentPawnSpeed = 200.0f;
+			PC->PlayerEnterToClient(PlayCharacter);
+		}
+	}
+}
+
+void AMyPlayerController::PlayerEnterToClient_Implementation(AMyCharacter* PlayCharacter)
+{
+	if (PlayCharacter == NULL) // 캐릭터에 빙의되지 않은 경우에는 실행하지 않게하자.
+	{
+		return;
+	}
+
+	PlayCharacter->fCurrentPawnSpeed = 200.0f;
+}
+
+void AMyPlayerController::Run()
+{
+	if (myCharacter)
+	{
+		RunToServer(myCharacter);
+	}
+}
+
+void AMyPlayerController::RunToServer_Implementation(AMyCharacter* PlayCharacter)
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	for (AActor* OutActor : OutActors)
+	{
+		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+		if (PC)
+		{
+			PlayCharacter->Run();
+			PC->RunToClient(PlayCharacter);
+		}
+	}
+}
+
+void AMyPlayerController::RunToClient_Implementation(AMyCharacter* PlayCharacter)
+{
+	if (PlayCharacter == NULL) // 캐릭터에 빙의되지 않은 경우에는 실행하지 않게하자.
+	{
+		return;
+	}
+
+	PlayCharacter->Run();
+}
+
+void AMyPlayerController::StopRun()
+{
+	if (myCharacter)
+	{
+		StopRunToServer(myCharacter);
+	}
+}
+
+void AMyPlayerController::StopRunToServer_Implementation(AMyCharacter* PlayCharacter)
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	for (AActor* OutActor : OutActors)
+	{
+		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->StopRunToClient(PlayCharacter);
+		}
+	}
+}
+
+void AMyPlayerController::StopRunToClient_Implementation(AMyCharacter* PlayCharacter)
+{
+	if (PlayCharacter == NULL) // 캐릭터에 빙의되지 않은 경우에는 실행하지 않게하자.
+	{
+		return;
+	}
+
+	PlayCharacter->StopRun();
+}
+
+void AMyPlayerController::Attack()
+{
+	if (myCharacter)
+	{
+		AttackToServer(myCharacter);
+	}
+}
+
+void AMyPlayerController::AttackToServer_Implementation(AMyCharacter* PlayCharacter)
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	for (AActor* OutActor : OutActors)
+	{
+		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->AttackToClient(PlayCharacter);
+		}
+	}
+}
+
+void AMyPlayerController::AttackToClient_Implementation(AMyCharacter* PlayCharacter)
+{
+	if (PlayCharacter == NULL) // 캐릭터에 빙의되지 않은 경우에는 실행하지 않게하자.
+	{
+		return;
+	}
+
+	PlayCharacter->Attack();
 }
 
 void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

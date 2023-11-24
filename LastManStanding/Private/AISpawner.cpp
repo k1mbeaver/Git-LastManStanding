@@ -33,3 +33,25 @@ int AAISpawner::GetMonsterSize()
 
 	return nSizeMonster;
 }
+
+bool AAISpawner::CanSpawn()
+{
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+	if (MyGI->GetIsServer("Player") == 0)
+	{
+		return false;
+	}
+
+	else
+	{
+		return true;
+	}
+}
+
+void AAISpawner::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//DOREPLIFETIME(AMyCharacter, bCanRun);
+}
+
