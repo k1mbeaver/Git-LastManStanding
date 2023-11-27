@@ -46,6 +46,12 @@ public:
 
 	UPROPERTY(Replicated)
 		float AttackRadius;
+
+	UPROPERTY(Replicated)
+		EPlayerState CurrentState;
+
+	UPROPERTY(Replicated)
+		float AttackPower;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -66,6 +72,8 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
+	float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamasgeCauser) override;
+
 	void UpDown(float NewAxisValue);
 
 	void LeftRight(float NewAxisValue);
@@ -83,4 +91,11 @@ public:
 	virtual void StopJumping() override;
 
 	void Attack();
+
+public:
+	UFUNCTION(BlueprintCallable)
+		void CharacterDead();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void MultiDead(AMyCharacter* DeathCharacter); // 캐릭터와 플레이어인경우 플레이어 컨트롤러도 받아온다.
 };

@@ -74,7 +74,12 @@ void AMyPlayerController::SetupInputComponent()
 
 void AMyPlayerController::UpDown(float NewAxisValue)
 {
-	if (myCharacter)
+	if (!myCharacter)
+	{
+		return;
+	}
+
+	if (myCharacter->CurrentState == EPlayerState::ALIVE)
 	{
 		myCharacter->UpDown(NewAxisValue);
 	}
@@ -82,7 +87,12 @@ void AMyPlayerController::UpDown(float NewAxisValue)
 
 void AMyPlayerController::LeftRight(float NewAxisValue)
 {
-	if (myCharacter)
+	if (!myCharacter)
+	{
+		return;
+	}
+
+	if (myCharacter->CurrentState == EPlayerState::ALIVE)
 	{
 		myCharacter->LeftRight(NewAxisValue);
 	}
@@ -90,7 +100,12 @@ void AMyPlayerController::LeftRight(float NewAxisValue)
 
 void AMyPlayerController::LookUp(float NewAxisValue)
 {
-	if (myCharacter)
+	if (!myCharacter)
+	{
+		return;
+	}
+
+	if (myCharacter->CurrentState == EPlayerState::ALIVE)
 	{
 		myCharacter->LookUp(NewAxisValue);
 	}
@@ -98,7 +113,12 @@ void AMyPlayerController::LookUp(float NewAxisValue)
 
 void AMyPlayerController::Turn(float NewAxisValue)
 {
-	if (myCharacter)
+	if (!myCharacter)
+	{
+		return;
+	}
+
+	if (myCharacter->CurrentState == EPlayerState::ALIVE)
 	{
 		myCharacter->Turn(NewAxisValue);
 	}
@@ -106,7 +126,12 @@ void AMyPlayerController::Turn(float NewAxisValue)
 
 void AMyPlayerController::Jump()
 {
-	if (myCharacter)
+	if (!myCharacter)
+	{
+		return;
+	}
+
+	if (myCharacter->CurrentState == EPlayerState::ALIVE)
 	{
 		myCharacter->Jump();
 	}
@@ -114,7 +139,12 @@ void AMyPlayerController::Jump()
 
 void AMyPlayerController::StopJumping()
 {
-	if (myCharacter)
+	if (!myCharacter)
+	{
+		return;
+	}
+
+	if (myCharacter->CurrentState == EPlayerState::ALIVE)
 	{
 		myCharacter->StopJumping();
 	}
@@ -156,7 +186,12 @@ void AMyPlayerController::PlayerEnterToClient_Implementation(AMyCharacter* PlayC
 
 void AMyPlayerController::Run()
 {
-	if (myCharacter)
+	if (!myCharacter)
+	{
+		return;
+	}
+
+	if (myCharacter->CurrentState == EPlayerState::ALIVE)
 	{
 		RunToServer(myCharacter);
 	}
@@ -190,7 +225,12 @@ void AMyPlayerController::RunToClient_Implementation(AMyCharacter* PlayCharacter
 
 void AMyPlayerController::StopRun()
 {
-	if (myCharacter)
+	if (!myCharacter)
+	{
+		return;
+	}
+
+	if (myCharacter->CurrentState == EPlayerState::ALIVE)
 	{
 		StopRunToServer(myCharacter);
 	}
@@ -223,7 +263,12 @@ void AMyPlayerController::StopRunToClient_Implementation(AMyCharacter* PlayChara
 
 void AMyPlayerController::Attack()
 {
-	if (myCharacter)
+	if (!myCharacter)
+	{
+		return;
+	}
+
+	if (myCharacter->CurrentState == EPlayerState::ALIVE)
 	{
 		AttackToServer(myCharacter);
 	}
@@ -252,6 +297,36 @@ void AMyPlayerController::AttackToClient_Implementation(AMyCharacter* PlayCharac
 	}
 
 	PlayCharacter->Attack();
+}
+
+void AMyPlayerController::CharacterDead()
+{
+	DeadToServer(myCharacter);
+}
+
+void AMyPlayerController::DeadToServer_Implementation(AMyCharacter* PlayCharacter)
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	for (AActor* OutActor : OutActors)
+	{
+		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->DeadToClient(PlayCharacter);
+		}
+	}
+}
+
+void AMyPlayerController::DeadToClient_Implementation(AMyCharacter* PlayCharacter)
+{
+	if (PlayCharacter == NULL) // 캐릭터에 빙의되지 않은 경우에는 실행하지 않게하자.
+	{
+		return;
+	}
+
+	PlayCharacter->CharacterAnim->SetDeadAnim();
 }
 
 void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

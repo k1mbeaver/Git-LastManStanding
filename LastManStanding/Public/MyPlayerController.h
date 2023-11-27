@@ -75,4 +75,12 @@ public:
 
 	UFUNCTION(Client, Unreliable)
 		void AttackToClient(AMyCharacter* PlayCharacter);
+
+	void CharacterDead();
+
+	UFUNCTION(Server, Unreliable)
+		void DeadToServer(AMyCharacter* PlayCharacter);
+
+	UFUNCTION(Client, Unreliable)
+		void DeadToClient(AMyCharacter* PlayCharacter);
 };
