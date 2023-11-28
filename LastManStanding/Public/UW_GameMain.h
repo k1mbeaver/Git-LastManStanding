@@ -22,6 +22,7 @@ public:
 	void SetPlayerKillingPoint(int nKillingPoint);
 	void SetWinnerName(const FString& WinnerName);
 	void VisibleGameover();
+	void VisibleDeath();
 
 private:
 	UPROPERTY(Meta = (BindWidget))
@@ -32,4 +33,7 @@ private:
 
 	UPROPERTY(Meta = (BindWidget))
 		class UUW_Mission* WB_UserMission;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UUW_Death* WB_Death;
 };

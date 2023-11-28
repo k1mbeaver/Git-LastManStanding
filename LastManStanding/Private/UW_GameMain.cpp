@@ -5,6 +5,7 @@
 #include "UW_Chat.h"
 #include "UW_Gameover.h"
 #include "UW_Mission.h"
+#include "UW_Death.h"
 
 TSharedPtr<SWidget> UUW_GameMain::GetChatInputTextObject()
 {
@@ -39,4 +40,9 @@ void UUW_GameMain::SetWinnerName(const FString& WinnerName)
 void UUW_GameMain::VisibleGameover()
 {
 	WB_GameOver->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UUW_GameMain::VisibleDeath()
+{
+	WB_Death->SetVisibility(ESlateVisibility::Visible);
 }

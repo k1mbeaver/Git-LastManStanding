@@ -250,6 +250,7 @@ void AMyCharacter::CharacterDead()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("CharacterDead!"));
 	CurrentState = EPlayerState::DEAD;
+	MyPC->PlayerDeath();
 	MultiDead(this);
 }
 

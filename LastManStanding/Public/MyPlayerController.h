@@ -29,6 +29,13 @@ private:
 	UPROPERTY(VisibleInstanceOnly, Replicated, Category = Pawn)
 		class AMyCharacter* myCharacter;
 
+public:
+	UPROPERTY(Replicated)
+		int CurrentPlayer = 0;
+
+	UPROPERTY(Replicated)
+		bool bGameStart = false;
+
 private:
 	void UpDown(float NewAxisValue);
 
@@ -43,7 +50,7 @@ private:
 	void StopJumping();
 
 public:
-	// 여기서 부터는 RPC 함수 사용해서 진행
+	// RPC 함수
 	void PlayerEnter();
 
 	UFUNCTION(Server, Unreliable)
@@ -51,6 +58,12 @@ public:
 
 	UFUNCTION(Client, Unreliable)
 		void PlayerEnterToClient(AMyCharacter* PlayCharacter);
+
+	// RPC 함수
+	void PlayerOut();
+
+	UFUNCTION(Server, Unreliable)
+		void PlayerOutToServer();
 
 	void Run();
 
@@ -83,4 +96,21 @@ public:
 
 	UFUNCTION(Client, Unreliable)
 		void DeadToClient(AMyCharacter* PlayCharacter);
+
+	void GameOver();
+
+	UFUNCTION(Server, Unreliable)
+		void GameoverToServer(const FString& WinnerName);
+
+	UFUNCTION(Client, Unreliable)
+		void GameoverToClient(const FString& WinnerName);
+
+	void PlayerDeath();
+
+	UFUNCTION(Server, Unreliable)
+		void PlayerDeathToServer();
+
+	// 클라이언트 함수
+
+	
 };

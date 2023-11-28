@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "ABGameInstance.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameMain_HUD.h"
 
 AMyPlayerController::AMyPlayerController()
 {
@@ -47,7 +48,18 @@ void AMyPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bGameStart)
+	{
+		if (CurrentPlayer == 1)
+		{
+			if (myCharacter->CurrentState == EPlayerState::ALIVE)
+			{
+				GameOver();
+			}
 
+			bGameStart = false;
+		}
+	}
 }
 
 void AMyPlayerController::SetupInputComponent()
@@ -169,6 +181,14 @@ void AMyPlayerController::PlayerEnterToServer_Implementation(AMyCharacter* PlayC
 		if (PC)
 		{
 			PlayCharacter->fCurrentPawnSpeed = 200.0f;
+			PC->CurrentPlayer = OutActors.Num();
+
+			if (PC->CurrentPlayer > 1)
+			{
+				PC->bGameStart = true;
+				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("GameStart!"));
+			}
+
 			PC->PlayerEnterToClient(PlayCharacter);
 		}
 	}
@@ -182,6 +202,26 @@ void AMyPlayerController::PlayerEnterToClient_Implementation(AMyCharacter* PlayC
 	}
 
 	PlayCharacter->fCurrentPawnSpeed = 200.0f;
+}
+
+void AMyPlayerController::PlayerOut()
+{
+	PlayerOutToServer();
+}
+
+void AMyPlayerController::PlayerOutToServer_Implementation()
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	for (AActor* OutActor : OutActors)
+	{
+		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->CurrentPlayer = PC->CurrentPlayer - 1;
+		}
+	}
 }
 
 void AMyPlayerController::Run()
@@ -329,9 +369,78 @@ void AMyPlayerController::DeadToClient_Implementation(AMyCharacter* PlayCharacte
 	PlayCharacter->CharacterAnim->SetDeadAnim();
 }
 
+void AMyPlayerController::GameOver()
+{
+	if (!myCharacter)
+	{
+		return;
+	}
+
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+	GameoverToServer(MyGI->GetUserName("Player"));
+}
+
+void AMyPlayerController::GameoverToServer_Implementation(const FString& WinnerName)
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	for (AActor* OutActor : OutActors)
+	{
+		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->SetShowMouseCursor(true);
+			PC->GameoverToClient(WinnerName);
+		}
+	}
+}
+
+void AMyPlayerController::GameoverToClient_Implementation(const FString& WinnerName)
+{
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+	if (HUD == nullptr) return;
+
+	HUD->SetWinnerName(WinnerName);
+	HUD->VisibleGameover();
+}
+
+void AMyPlayerController::PlayerDeath()
+{
+	if (!myCharacter)
+	{
+		return;
+	}
+
+	PlayerDeathToServer();
+
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+	if (HUD == nullptr) return;
+
+	HUD->VisibleDeath();
+	SetShowMouseCursor(true);
+}
+
+void AMyPlayerController::PlayerDeathToServer_Implementation()
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	for (AActor* OutActor : OutActors)
+	{
+		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->CurrentPlayer = PC->CurrentPlayer - 1;
+		}
+	}
+}
+
 void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMyPlayerController, myCharacter);
+	DOREPLIFETIME(AMyPlayerController, CurrentPlayer);
+	DOREPLIFETIME(AMyPlayerController, bGameStart);
 }
