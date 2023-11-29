@@ -34,6 +34,9 @@ public:
 		int CurrentPlayer = 0;
 
 	UPROPERTY(Replicated)
+		int nPlayerNumber = 0;
+
+	UPROPERTY(Replicated)
 		bool bGameStart = false;
 
 private:
@@ -57,7 +60,7 @@ public:
 		void PlayerEnterToServer(AMyCharacter* PlayCharacter);
 
 	UFUNCTION(Client, Unreliable)
-		void PlayerEnterToClient(AMyCharacter* PlayCharacter);
+		void PlayerEnterToClient(AMyCharacter* PlayCharacter, int nCurrentPlayer);
 
 	// RPC ÇÔ¼ö
 	void PlayerOut();

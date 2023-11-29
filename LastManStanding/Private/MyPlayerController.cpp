@@ -18,14 +18,9 @@ void AMyPlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
 
-
-	if (aPawn)
-	{
-		myCharacter = Cast<AMyCharacter>(aPawn);
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Success!"));
-		myCharacter->MyPC = this;
-		PlayerEnter();
-	}
+	myCharacter = Cast<AMyCharacter>(GetPawn());
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Success!"));
+	myCharacter->MyPC = this;
 }
 
 void AMyPlayerController::PostInitializeComponents()
@@ -166,6 +161,11 @@ void AMyPlayerController::PlayerEnter()
 {
 	if (myCharacter)
 	{
+		TArray<AActor*> OutActors;
+		UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+		nPlayerNumber = OutActors.Num() - 1;
+		
 		PlayerEnterToServer(myCharacter);
 	}
 }
@@ -181,6 +181,7 @@ void AMyPlayerController::PlayerEnterToServer_Implementation(AMyCharacter* PlayC
 		if (PC)
 		{
 			PlayCharacter->fCurrentPawnSpeed = 200.0f;
+
 			PC->CurrentPlayer = OutActors.Num();
 
 			if (PC->CurrentPlayer > 1)
@@ -189,18 +190,25 @@ void AMyPlayerController::PlayerEnterToServer_Implementation(AMyCharacter* PlayC
 				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("GameStart!"));
 			}
 
-			PC->PlayerEnterToClient(PlayCharacter);
+			PC->PlayerEnterToClient(PlayCharacter, OutActors.Num());
 		}
 	}
 }
 
-void AMyPlayerController::PlayerEnterToClient_Implementation(AMyCharacter* PlayCharacter)
+void AMyPlayerController::PlayerEnterToClient_Implementation(AMyCharacter* PlayCharacter, int nCurrentPlayer)
 {
 	if (PlayCharacter == NULL) // 캐릭터에 빙의되지 않은 경우에는 실행하지 않게하자.
 	{
 		return;
 	}
 
+	CurrentPlayer = nCurrentPlayer;
+
+	if (CurrentPlayer > 1)
+	{
+		bGameStart = true;
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("GameStart!"));
+	}
 	PlayCharacter->fCurrentPawnSpeed = 200.0f;
 }
 
@@ -390,7 +398,6 @@ void AMyPlayerController::GameoverToServer_Implementation(const FString& WinnerN
 		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
 		if (PC)
 		{
-			PC->SetShowMouseCursor(true);
 			PC->GameoverToClient(WinnerName);
 		}
 	}
@@ -403,6 +410,7 @@ void AMyPlayerController::GameoverToClient_Implementation(const FString& WinnerN
 
 	HUD->SetWinnerName(WinnerName);
 	HUD->VisibleGameover();
+	SetShowMouseCursor(true);
 }
 
 void AMyPlayerController::PlayerDeath()
@@ -443,4 +451,5 @@ void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AMyPlayerController, myCharacter);
 	DOREPLIFETIME(AMyPlayerController, CurrentPlayer);
 	DOREPLIFETIME(AMyPlayerController, bGameStart);
+	DOREPLIFETIME(AMyPlayerController, nPlayerNumber);
 }
