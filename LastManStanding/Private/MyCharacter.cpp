@@ -50,14 +50,15 @@ void AMyCharacter::BeginPlay()
 	
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 
-	mySkeletalMesh->SetSkeletalMesh(MyGI->GetSkeletalMesh("Default"));
-	mySkeletalMesh->SetAnimInstanceClass(MyGI->GetAninInstance("Default"));
+	mySkeletalMesh->SetSkeletalMesh(MyGI->GetPlayerMesh("Player"));
+	mySkeletalMesh->SetAnimInstanceClass(MyGI->GetPlayerAnim("Player"));
 	CharacterAnim = Cast<UABAnimInstance>(mySkeletalMesh->GetAnimInstance());
 	AttackMontage = MyGI->GetMontage("Attack");
 
-	fCurrentPawnSpeed = 200.0f;
 	GetCharacterMovement()->JumpZVelocity = 400.0f;
-	GetCharacterMovement()->MaxWalkSpeed = fCurrentPawnSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = fCurrentWalkSpeed;
+
+	CharacterAnim->OnOnCollisonStart_Punch.AddUObject(this, &AMyCharacter::AttackCheck);
 	
 	/*
 	SpringArm->TargetArmLength = 450.0f;
@@ -142,7 +143,7 @@ void AMyCharacter::Run()
 		return;
 	}
 
-	GetCharacterMovement()->MaxWalkSpeed = fCurrentPawnSpeed * 2.0f;
+	GetCharacterMovement()->MaxWalkSpeed = fCurrentRunSpeed;
 }
 
 void AMyCharacter::StopRun()
@@ -151,7 +152,7 @@ void AMyCharacter::StopRun()
 	{
 		return;
 	}
-	GetCharacterMovement()->MaxWalkSpeed = fCurrentPawnSpeed / 2.0f;
+	GetCharacterMovement()->MaxWalkSpeed = fCurrentWalkSpeed;
 }
 
 void AMyCharacter::Jump()
@@ -188,7 +189,10 @@ void AMyCharacter::Attack()
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 
 	CharacterAnim->PlayAttackMontage(AttackMontage);
+}
 
+void AMyCharacter::AttackCheck()
+{
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
 	bool bResult = GetWorld()->SweepSingleByChannel(
@@ -200,7 +204,7 @@ void AMyCharacter::Attack()
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params);
 
-	
+
 #if ENABLE_DRAW_DEBUG
 	FVector TraceVec = GetActorForwardVector() * AttackRange;
 	FVector Center = GetActorLocation() + TraceVec * 0.5f;
@@ -210,7 +214,7 @@ void AMyCharacter::Attack()
 	float DebugLifeTime = 3.0f;
 
 	// 이거는 에디터에서만 사용하는거
-	
+
 	DrawDebugCapsule(GetWorld(),
 		Center,
 		HalfHeight,
@@ -266,7 +270,8 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AMyCharacter, fCurrentPawnSpeed);
+	DOREPLIFETIME(AMyCharacter, fCurrentWalkSpeed);
+	DOREPLIFETIME(AMyCharacter, fCurrentRunSpeed);
 	DOREPLIFETIME(AMyCharacter, CharacterAnim);
 	DOREPLIFETIME(AMyCharacter, mySkeletalMesh);
 	DOREPLIFETIME(AMyCharacter, AttackMontage);

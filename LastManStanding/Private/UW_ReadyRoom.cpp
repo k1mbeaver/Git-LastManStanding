@@ -5,7 +5,9 @@
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "Components/TextBlock.h"
+#include "Components/ComboBoxString.h"
 #include "ReadyRoom_PC.h"
+#include "ABGameInstance.h"
 
 
 void UUW_ReadyRoom::NativeOnInitialized()
@@ -17,6 +19,7 @@ void UUW_ReadyRoom::NativeOnInitialized()
 	PlayerOne = Cast<UEditableTextBox>(GetWidgetFromName(TEXT("PlayerOne")));
 	IPBox = Cast<UEditableTextBox>(GetWidgetFromName(TEXT("IPBox")));
 	IP = Cast<UTextBlock>(GetWidgetFromName(TEXT("IP")));
+	MeshCB = Cast<UComboBoxString>(GetWidgetFromName(TEXT("MeshCB")));
 }
 
 
@@ -27,13 +30,29 @@ void UUW_ReadyRoom::NativeConstruct()
 	BtPlay->OnClicked.AddDynamic(this, &UUW_ReadyRoom::PlayHandler);
 	BtDecide->OnClicked.AddDynamic(this, &UUW_ReadyRoom::DecideHandler);
 	BtJoin->OnClicked.AddDynamic(this, &UUW_ReadyRoom::JoinHandler);
+
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+
+	TArray<FName> RowNames;
+	RowNames = MyGI->GetMeshArray(); // Get the row names from the data table
+
+	for (const FName& RowName : RowNames)
+	{
+		// Add each row name to the combo box
+		MeshCB->AddOption(RowName.ToString());
+	}
+
+	MeshCB->SetSelectedOption("Man1");
 }
 
 void UUW_ReadyRoom::PlayHandler()
 {
 	AReadyRoom_PC* MyPC = Cast<AReadyRoom_PC>(GetOwningPlayer());
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 	if (MyPC)
 	{
+		MyGI->SetPlayerMesh("Player", MyGI->GetSkeletalMesh(MeshCB->GetSelectedOption()));
+		MyGI->SetPlayerAnim("Player", MyGI->GetAninInstance(MeshCB->GetSelectedOption()));
 		MyPC->Play();
 	}
 }
@@ -50,8 +69,11 @@ void UUW_ReadyRoom::DecideHandler()
 void UUW_ReadyRoom::JoinHandler()
 {
 	AReadyRoom_PC* MyPC = Cast<AReadyRoom_PC>(GetOwningPlayer());
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 	if (MyPC)
 	{
+		MyGI->SetPlayerMesh("Player", MyGI->GetSkeletalMesh(MeshCB->GetSelectedOption()));
+		MyGI->SetPlayerAnim("Player", MyGI->GetAninInstance(MeshCB->GetSelectedOption()));
 		MyPC->Join();
 	}
 }

@@ -39,7 +39,10 @@ public:
 		class AMyPlayerController* MyPC;
 
 	UPROPERTY(Replicated)
-		float fCurrentPawnSpeed;
+		float fCurrentWalkSpeed = 200.0f;
+
+	UPROPERTY(Replicated)
+		float fCurrentRunSpeed = 400.0f;
 
 	UPROPERTY(Replicated)
 		float AttackRange;
@@ -91,6 +94,8 @@ public:
 	virtual void StopJumping() override;
 
 	void Attack();
+
+	void AttackCheck();
 
 public:
 	UFUNCTION(BlueprintCallable)

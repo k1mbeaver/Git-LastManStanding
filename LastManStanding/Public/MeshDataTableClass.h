@@ -14,6 +14,9 @@ struct FMeshDataTable : public FTableRowBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FString MyMeshName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USkeletalMesh* MySkeletalMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

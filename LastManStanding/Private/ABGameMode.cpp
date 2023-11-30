@@ -30,9 +30,9 @@ void AABGameMode::PostLogin(APlayerController* NewPlayer)
 	//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("PostLogin Begin"));
 	Super::PostLogin(NewPlayer);
 
-	AMyPlayerController* MyPC = Cast<AMyPlayerController>(NewPlayer);
+	//AMyPlayerController* MyPC = Cast<AMyPlayerController>(NewPlayer);
 
-	MyPC->PlayerEnter();
+	//MyPC->PlayerEnter();
 	//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("PostLogin End"));
 
 }

@@ -21,6 +21,7 @@ void AMyPlayerController::OnPossess(APawn* aPawn)
 	myCharacter = Cast<AMyCharacter>(GetPawn());
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Success!"));
 	myCharacter->MyPC = this;
+	PlayerEnter();
 }
 
 void AMyPlayerController::PostInitializeComponents()
@@ -36,6 +37,12 @@ void AMyPlayerController::BeginPlay()
 
 	SetShowMouseCursor(false);
 	SetInputMode(FInputModeGameOnly());
+
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+
+	PlayerName = MyGI->GetUserName("Player");
+
+	PlayerEnter();
 }
 
 
@@ -43,23 +50,14 @@ void AMyPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bGameStart)
-	{
-		if (CurrentPlayer == 1)
-		{
-			if (myCharacter->CurrentState == EPlayerState::ALIVE)
-			{
-				GameOver();
-			}
-
-			bGameStart = false;
-		}
-	}
 }
 
 void AMyPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
+
+	// 채팅 함수
+	InputComponent->BindAction(TEXT("Chat"), EInputEvent::IE_Pressed, this, &AMyPlayerController::FocusChatInputText);
 
 	// 캐릭터 이동 함수
 	InputComponent->BindAxis(TEXT("UpDown"), this, &AMyPlayerController::UpDown);
@@ -165,12 +163,14 @@ void AMyPlayerController::PlayerEnter()
 		UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
 
 		nPlayerNumber = OutActors.Num() - 1;
+
+		UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 		
-		PlayerEnterToServer(myCharacter);
+		PlayerEnterToServer(myCharacter, MyGI->GetPlayerMesh("Player"));
 	}
 }
 
-void AMyPlayerController::PlayerEnterToServer_Implementation(AMyCharacter* PlayCharacter)
+void AMyPlayerController::PlayerEnterToServer_Implementation(AMyCharacter* PlayCharacter, USkeletalMesh* PlayerMesh)
 {
 	TArray<AActor*> OutActors;
 	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
@@ -180,36 +180,20 @@ void AMyPlayerController::PlayerEnterToServer_Implementation(AMyCharacter* PlayC
 		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
 		if (PC)
 		{
-			PlayCharacter->fCurrentPawnSpeed = 200.0f;
-
-			PC->CurrentPlayer = OutActors.Num();
-
-			if (PC->CurrentPlayer > 1)
-			{
-				PC->bGameStart = true;
-				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("GameStart!"));
-			}
-
-			PC->PlayerEnterToClient(PlayCharacter, OutActors.Num());
+			PC->PlayerEnterToClient(PlayCharacter, OutActors.Num(), PlayerMesh);
 		}
 	}
 }
 
-void AMyPlayerController::PlayerEnterToClient_Implementation(AMyCharacter* PlayCharacter, int nCurrentPlayer)
+void AMyPlayerController::PlayerEnterToClient_Implementation(AMyCharacter* PlayCharacter, int nCurrentPlayer, USkeletalMesh* PlayerMesh)
 {
 	if (PlayCharacter == NULL) // 캐릭터에 빙의되지 않은 경우에는 실행하지 않게하자.
 	{
 		return;
 	}
 
+	PlayCharacter->mySkeletalMesh->SetSkeletalMesh(PlayerMesh);
 	CurrentPlayer = nCurrentPlayer;
-
-	if (CurrentPlayer > 1)
-	{
-		bGameStart = true;
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("GameStart!"));
-	}
-	PlayCharacter->fCurrentPawnSpeed = 200.0f;
 }
 
 void AMyPlayerController::PlayerOut()
@@ -227,9 +211,14 @@ void AMyPlayerController::PlayerOutToServer_Implementation()
 		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
 		if (PC)
 		{
-			PC->CurrentPlayer = PC->CurrentPlayer - 1;
+			PC->PlayerOutToClient();
 		}
 	}
+}
+
+void AMyPlayerController::PlayerOutToClient_Implementation()
+{
+	CurrentPlayer = CurrentPlayer - 1;
 }
 
 void AMyPlayerController::Run()
@@ -357,6 +346,37 @@ void AMyPlayerController::DeadToServer_Implementation(AMyCharacter* PlayCharacte
 	TArray<AActor*> OutActors;
 	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
 
+	CurrentPlayer = CurrentPlayer - 1;
+
+	FString strWinner;
+
+	if (CurrentPlayer == 1)
+	{
+		for (AActor* OutActor : OutActors)
+		{
+			AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+			if (PC)
+			{
+				if (PC->myCharacter->CurrentState == EPlayerState::ALIVE)
+				{
+					strWinner = PC->PlayerName;
+					break;
+				}
+			}
+		}
+
+		for (AActor* OutActor : OutActors)
+		{
+			AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+			if (PC)
+			{
+				GameoverToClient(strWinner);
+			}
+		}
+
+		return;
+	}
+
 	for (AActor* OutActor : OutActors)
 	{
 		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
@@ -385,7 +405,7 @@ void AMyPlayerController::GameOver()
 	}
 
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
-	GameoverToServer(MyGI->GetUserName("Player"));
+	GameoverToServer(PlayerName);
 }
 
 void AMyPlayerController::GameoverToServer_Implementation(const FString& WinnerName)
@@ -420,7 +440,7 @@ void AMyPlayerController::PlayerDeath()
 		return;
 	}
 
-	PlayerDeathToServer();
+	DeadToServer(myCharacter);
 
 	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
 	if (HUD == nullptr) return;
@@ -429,19 +449,57 @@ void AMyPlayerController::PlayerDeath()
 	SetShowMouseCursor(true);
 }
 
-void AMyPlayerController::PlayerDeathToServer_Implementation()
+void AMyPlayerController::SendMessage(const FText& Text)
 {
+	// GameInstance에 저장해두었던 내 닉네임.
+	UABGameInstance* MyGI = GetGameInstance<UABGameInstance>(); // GameInstance를 직접 만들어서 사용
+	if (MyGI)
+	{
+		FString UserName = MyGI->GetUserName("Player");
+		FString Message = FString::Printf(TEXT("%s : %s"), *UserName, *Text.ToString());
+
+		CtoS_SendMessage(Message); // 서버에서 실행될 수 있도록 보낸다.
+	}
+}
+
+void AMyPlayerController::FocusChatInputText()
+{
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+	if (HUD == nullptr) return;
+
+	FInputModeUIOnly InputMode;
+	InputMode.SetWidgetToFocus(HUD->GetChatInputTextObject());
+
+	SetInputMode(InputMode);
+}
+
+void AMyPlayerController::FocusGame()
+{
+	SetInputMode(FInputModeGameOnly());
+}
+
+void AMyPlayerController::CtoS_SendMessage_Implementation(const FString& Message)
+{
+	// 서버에서는 모든 PlayerController에게 이벤트를 보낸다.
 	TArray<AActor*> OutActors;
 	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
-
 	for (AActor* OutActor : OutActors)
 	{
 		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
 		if (PC)
 		{
-			PC->CurrentPlayer = PC->CurrentPlayer - 1;
+			PC->StoC_SendMessage(Message);
 		}
 	}
+}
+
+void AMyPlayerController::StoC_SendMessage_Implementation(const FString& Message)
+{
+	// 서버와 클라이언트는 이 이벤트를 받아서 실행한다.
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+	if (HUD == nullptr) return;
+
+	HUD->AddChatMessage(Message);
 }
 
 void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -452,4 +510,5 @@ void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AMyPlayerController, CurrentPlayer);
 	DOREPLIFETIME(AMyPlayerController, bGameStart);
 	DOREPLIFETIME(AMyPlayerController, nPlayerNumber);
+	DOREPLIFETIME(AMyPlayerController, PlayerName);
 }

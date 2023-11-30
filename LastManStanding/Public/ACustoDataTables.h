@@ -10,11 +10,9 @@
 USTRUCT(BlueprintType)
 struct FPlayerData : public FTableRowBase
 {
-	GENERATED_BODY()
+	GENERATED_USTRUCT_BODY()
 
 public:
-	FPlayerData() : NickName("Player2"), IsServer(1), MapName("") {}
-
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 		FString NickName;
 
@@ -23,6 +21,12 @@ public:
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 			FString MapName;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+			USkeletalMesh* PlayerMesh;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+			TSubclassOf<class UAnimInstance> MyAnimation;
 };
 UCLASS()
 class LASTMANSTANDING_API AACustoDataTables : public AActor

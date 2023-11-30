@@ -5,7 +5,7 @@
 #include "Components/TextBlock.h"
 #include "Components/ScrollBox.h"
 #include "Components/EditableTextBox.h"
-#include "ABPlayerController.h"
+#include "MyPlayerController.h"
 
 void UUW_Chat::NativeConstruct()
 {
@@ -36,7 +36,7 @@ TSharedPtr<SWidget> UUW_Chat::GetChatInputTextObject()
 
 void UUW_Chat::OnChatTextCommitted(const FText& Text, ETextCommit::Type CommitMethod)
 {
-	AABPlayerController* MyPC = Cast<AABPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	AMyPlayerController* MyPC = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if (MyPC == nullptr) return;
 
 	switch (CommitMethod)

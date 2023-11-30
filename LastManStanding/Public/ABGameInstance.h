@@ -24,12 +24,17 @@ public:
 	void SetUserName(FString Player, FString UserName);
 	int GetIsServer(FString Player);
 	void SetIsServer(FString Player, int ServerAndClient);
+	void SetPlayerMesh(FString Player, USkeletalMesh* myMesh);
+	void SetPlayerAnim(FString Player, TSubclassOf<class UAnimInstance> myAnim);
+	TSubclassOf<class UAnimInstance> GetPlayerAnim(FString Player);
+	USkeletalMesh* GetPlayerMesh(FString Player);
 	USoundWave* GetSound(FString SoundName);
 	USkeletalMesh* GetSkeletalMesh(FString MeshName);
 	TSubclassOf<class UAnimInstance> GetAninInstance(FString MeshName);
 	FString GetMapName(FString MapName);
 	int GetMonsterSize(FString MapName);
 	UAnimMontage* GetMontage(FString MontageName);
+	TArray<FName> GetMeshArray();
 
 private:
 	UPROPERTY()
