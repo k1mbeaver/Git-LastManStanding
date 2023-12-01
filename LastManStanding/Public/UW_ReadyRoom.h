@@ -26,6 +26,8 @@ private:
 		class UEditableTextBox* IPBox;
 	UPROPERTY(Meta = (BindWidget))
 		class UTextBlock* IP;
+	UPROPERTY(Meta = (BindWidget))
+		class UComboBoxString* MeshCB;
 
 public:
 

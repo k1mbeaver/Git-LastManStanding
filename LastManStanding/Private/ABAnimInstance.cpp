@@ -37,7 +37,7 @@ void UABAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UABAnimInstance::PlayAttackMontage(UAnimMontage* playPunch)
 {
-	ABCHECK(!IsDead);
+	//ABCHECK(!IsDead);
 	Montage_Play(playPunch, 1.0f);
 	PunchAnimation_Punch.Broadcast();
 }

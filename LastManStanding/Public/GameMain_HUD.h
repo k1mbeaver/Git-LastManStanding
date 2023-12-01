@@ -26,6 +26,7 @@ public:
 	void SetPlayerKillingPoint(int nKillingPoint);
 	void SetWinnerName(const FString& WinnerName);
 	void VisibleGameover();
+	void VisibleDeath();
 
 private:
 	TSubclassOf<class UUW_GameMain> MainUIClass;

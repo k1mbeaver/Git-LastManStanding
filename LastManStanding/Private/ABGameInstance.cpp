@@ -6,6 +6,7 @@
 #include "SoundDataTableClass.h"
 #include "MapDataTableClass.h"
 #include "MeshDataTableClass.h"
+#include "AnimationDataTableClass.h"
 
 UABGameInstance::UABGameInstance()
 {
@@ -37,6 +38,13 @@ UABGameInstance::UABGameInstance()
 	{
 		FSoundTable = DT_SOUND.Object;
 	}
+
+	FString AnimationDataPath = TEXT("DataTable'/Game/DataTable/AnimationDataTable.AnimationDataTable'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ANIMATION(*AnimationDataPath);
+	if (DT_ANIMATION.Succeeded())
+	{
+		FAnimationTable = DT_ANIMATION.Object;
+	}
 }
 
 FString UABGameInstance::GetUserName(FString Player)
@@ -52,6 +60,32 @@ void UABGameInstance::SetUserName(FString Player, FString UserName)
 	PlayerData->NickName = UserName;
 
 	// 일단 여기까지 하고 대기방 구현후 다시 진행하자
+}
+
+USkeletalMesh* UABGameInstance::GetPlayerMesh(FString Player)
+{
+	FPlayerData* PlayerData = FPlayerTable->FindRow<FPlayerData>(*Player, TEXT(""));
+	USkeletalMesh* PlayerMesh = PlayerData->PlayerMesh;
+	return PlayerMesh;
+}
+
+void UABGameInstance::SetPlayerMesh(FString Player, USkeletalMesh* myMesh)
+{
+	FPlayerData* PlayerData = FPlayerTable->FindRow<FPlayerData>(*Player, TEXT(""));
+	PlayerData->PlayerMesh = myMesh;
+}
+
+TSubclassOf<class UAnimInstance> UABGameInstance::GetPlayerAnim(FString Player)
+{
+	FPlayerData* PlayerData = FPlayerTable->FindRow<FPlayerData>(*Player, TEXT(""));
+	TSubclassOf<class UAnimInstance> PlayerAnim = PlayerData->MyAnimation;
+	return PlayerAnim;
+}
+
+void UABGameInstance::SetPlayerAnim(FString Player, TSubclassOf<class UAnimInstance> myAnim)
+{
+	FPlayerData* PlayerData = FPlayerTable->FindRow<FPlayerData>(*Player, TEXT(""));
+	PlayerData->MyAnimation = myAnim;
 }
 
 int UABGameInstance::GetIsServer(FString Player)
@@ -103,4 +137,17 @@ int UABGameInstance::GetMonsterSize(FString MapName)
 	FMapDataTable* MapData = FMapTable->FindRow<FMapDataTable>(*MapName, TEXT(""));
 	int MonsterSize = MapData->AISize;
 	return MonsterSize;
+}
+
+UAnimMontage* UABGameInstance::GetMontage(FString AnimationName)
+{
+	FAnimationDataTable* AnimationData = FAnimationTable->FindRow<FAnimationDataTable>(*AnimationName, TEXT(""));
+	UAnimMontage* myMontage = AnimationData->MyMontage;
+	return myMontage;
+}
+
+TArray<FName> UABGameInstance::GetMeshArray()
+{
+	TArray<FName> myMeshData = FMeshTable->GetRowNames();
+	return myMeshData;
 }

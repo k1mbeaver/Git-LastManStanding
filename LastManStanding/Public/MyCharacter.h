@@ -29,6 +29,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Replicated, Category = Mesh)
 		class USkeletalMeshComponent* mySkeletalMesh;
 
+	UPROPERTY(VisibleAnywhere, Replicated, Category = Mesh)
+		class UAnimMontage* AttackMontage;
+
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class USpringArmComponent* SpringArm;
 
@@ -36,7 +39,22 @@ public:
 		class AMyPlayerController* MyPC;
 
 	UPROPERTY(Replicated)
-		float fCurrentPawnSpeed;
+		float fCurrentWalkSpeed = 200.0f;
+
+	UPROPERTY(Replicated)
+		float fCurrentRunSpeed = 400.0f;
+
+	UPROPERTY(Replicated)
+		float AttackRange;
+
+	UPROPERTY(Replicated)
+		float AttackRadius;
+
+	UPROPERTY(Replicated)
+		EPlayerState CurrentState;
+
+	UPROPERTY(Replicated)
+		float AttackPower;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -44,6 +62,8 @@ protected:
 private:
 	UPROPERTY()
 		class UGameplayStatics* GameStatic;
+
+	bool IsAttacking = false;
 
 public:	
 	AMyCharacter();
@@ -54,6 +74,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+
+	float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamasgeCauser) override;
 
 	void UpDown(float NewAxisValue);
 
@@ -70,4 +92,15 @@ public:
 	virtual void Jump() override;
 
 	virtual void StopJumping() override;
+
+	void Attack();
+
+	void AttackCheck();
+
+public:
+	UFUNCTION(BlueprintCallable)
+		void CharacterDead();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void MultiDead(AMyCharacter* DeathCharacter); // 캐릭터와 플레이어인경우 플레이어 컨트롤러도 받아온다.
 };

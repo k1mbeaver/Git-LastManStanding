@@ -50,7 +50,7 @@ void AReadyRoom_PC::VisiblePlay()
 void AReadyRoom_PC::Play()
 {
 	//CtoS_Play(); // 여기서 각 클라이언트 들의 닉네임을 저장한다.
-	UGameplayStatics::OpenLevel(GetWorld(), FName("ThirdPersonExampleMap"), true, ((FString)("Listen")));
+	UGameplayStatics::OpenLevel(GetWorld(), FName("Demonstration"), true, ((FString)("Listen")));
 	//UGameplayStatics::OpenLevel(GetWorld(), FName("ThirdPersonExampleMap"));
 }
 

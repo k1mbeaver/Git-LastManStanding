@@ -40,7 +40,6 @@ AABAICharacter::AABAICharacter()
 void AABAICharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	ABAnim = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
 
@@ -50,6 +49,7 @@ void AABAICharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	ABAIController = Cast<AABAIController>(GetController());
+	ABAnim = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
 // Called every frame
@@ -66,8 +66,35 @@ void AABAICharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
-void AABAICharacter::CharacterDead(AABAICharacter* DeadCharacter)
+void AABAICharacter::CharacterDead()
 {
-	DeadCharacter->ABAnim->SetDeadAnim();
+	ABAIController->StopAI();
+	MultiDead(this);
 }
 
+float AABAICharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	if (FinalDamage > 0.0f) // 일단 맞으면 기절
+	{
+		CharacterDead();
+	}
+
+	return FinalDamage;
+}
+
+void AABAICharacter::MultiDead_Implementation(AABAICharacter* DeathCharacter)
+{
+	DeathCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	DeathCharacter->GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	DeathCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	DeathCharacter->ABAnim->SetDeadAnim();
+}
+
+void AABAICharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AABAICharacter, ABAnim);
+}

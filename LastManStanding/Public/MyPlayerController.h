@@ -29,6 +29,21 @@ private:
 	UPROPERTY(VisibleInstanceOnly, Replicated, Category = Pawn)
 		class AMyCharacter* myCharacter;
 
+	bool bChat = false;
+
+public:
+	UPROPERTY(Replicated)
+		int CurrentPlayer = 0;
+
+	UPROPERTY(Replicated)
+		int nPlayerNumber = 0;
+
+	UPROPERTY(Replicated)
+		bool bGameStart = false;
+
+	UPROPERTY(Replicated)
+		FString PlayerName;
+
 private:
 	void UpDown(float NewAxisValue);
 
@@ -43,14 +58,23 @@ private:
 	void StopJumping();
 
 public:
-	// 여기서 부터는 RPC 함수 사용해서 진행
+	// RPC 함수
 	void PlayerEnter();
 
 	UFUNCTION(Server, Unreliable)
-		void PlayerEnterToServer(AMyCharacter* PlayCharacter);
+		void PlayerEnterToServer(AMyCharacter* PlayCharacter, USkeletalMesh* PlayerMesh);
 
 	UFUNCTION(Client, Unreliable)
-		void PlayerEnterToClient(AMyCharacter* PlayCharacter);
+		void PlayerEnterToClient(AMyCharacter* PlayCharacter, int nCurrentPlayer, USkeletalMesh* PlayerMesh);
+
+	// RPC 함수
+	void PlayerOut();
+
+	UFUNCTION(Server, Unreliable)
+		void PlayerOutToServer();
+
+	UFUNCTION(Client, Unreliable)
+		void PlayerOutToClient();
 
 	void Run();
 
@@ -67,4 +91,46 @@ public:
 
 	UFUNCTION(Client, Unreliable)
 		void StopRunToClient(AMyCharacter* PlayCharacter);
+
+	void Attack();
+
+	UFUNCTION(Server, Unreliable)
+		void AttackToServer(AMyCharacter* PlayCharacter);
+
+	UFUNCTION(Client, Unreliable)
+		void AttackToClient(AMyCharacter* PlayCharacter);
+
+	void CharacterDead();
+
+	UFUNCTION(Server, Unreliable)
+		void DeadToServer(AMyCharacter* PlayCharacter);
+
+	UFUNCTION(Client, Unreliable)
+		void DeadToClient(AMyCharacter* PlayCharacter);
+
+	void GameOver(const FString& WinnerName);
+
+	UFUNCTION(Server, Unreliable)
+		void GameoverToServer(const FString& WinnerName);
+
+	UFUNCTION(Client, Unreliable)
+		void GameoverToClient(const FString& WinnerName);
+
+	void SendMessage(const FText& Text);
+
+	UFUNCTION()
+		void FocusChatInputText();
+
+	UFUNCTION()
+		void FocusGame();
+
+	UFUNCTION(Server, Unreliable)
+		void CtoS_SendMessage(const FString& Message);
+
+	UFUNCTION(Client, Unreliable)
+		void StoC_SendMessage(const FString& Message);
+
+	// 클라이언트 함수
+
+	void PlayerDeath();
 };

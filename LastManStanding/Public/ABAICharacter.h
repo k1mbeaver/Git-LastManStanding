@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Net/UnrealNetwork.h"
 #include "ABAICharacter.generated.h"
 
 UCLASS()
@@ -28,11 +29,17 @@ public:
 
 	virtual void PostInitializeComponents() override;
 
+	float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamasgeCauser) override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 	UFUNCTION()
-		void CharacterDead(AABAICharacter* DeadCharacter);
+		void CharacterDead();
 
-	UPROPERTY(VisibleInstanceOnly, Category = Animation)
+	UFUNCTION(NetMulticast, Reliable)
+		void MultiDead(AABAICharacter* DeathCharacter); // 캐릭터와 플레이어인경우 플레이어 컨트롤러도 받아온다.
+
+	UPROPERTY(VisibleInstanceOnly, Replicated, Category = Animation)
 		class UABAnimInstance* ABAnim;
 
 	UPROPERTY()

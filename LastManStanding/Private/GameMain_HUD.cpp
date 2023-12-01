@@ -81,3 +81,8 @@ void AGameMain_HUD::VisibleGameover()
 {
 	MainUIObject->VisibleGameover();
 }
+
+void AGameMain_HUD::VisibleDeath()
+{
+	MainUIObject->VisibleDeath();
+}
