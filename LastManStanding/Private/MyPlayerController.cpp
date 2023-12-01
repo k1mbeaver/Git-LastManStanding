@@ -21,7 +21,6 @@ void AMyPlayerController::OnPossess(APawn* aPawn)
 	myCharacter = Cast<AMyCharacter>(GetPawn());
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Success!"));
 	myCharacter->MyPC = this;
-	PlayerEnter();
 }
 
 void AMyPlayerController::PostInitializeComponents()
@@ -41,7 +40,6 @@ void AMyPlayerController::BeginPlay()
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 
 	PlayerName = MyGI->GetUserName("Player");
-
 	PlayerEnter();
 }
 
@@ -165,8 +163,10 @@ void AMyPlayerController::PlayerEnter()
 		nPlayerNumber = OutActors.Num() - 1;
 
 		UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Enter!"));
 		
-		PlayerEnterToServer(myCharacter, MyGI->GetPlayerMesh("Player"));
+		PlayerEnterToServer(myCharacter, myCharacter->mySkeletalMesh->SkeletalMesh);
 	}
 }
 
@@ -346,37 +346,6 @@ void AMyPlayerController::DeadToServer_Implementation(AMyCharacter* PlayCharacte
 	TArray<AActor*> OutActors;
 	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
 
-	CurrentPlayer = CurrentPlayer - 1;
-
-	FString strWinner;
-
-	if (CurrentPlayer == 1)
-	{
-		for (AActor* OutActor : OutActors)
-		{
-			AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
-			if (PC)
-			{
-				if (PC->myCharacter->CurrentState == EPlayerState::ALIVE)
-				{
-					strWinner = PC->PlayerName;
-					break;
-				}
-			}
-		}
-
-		for (AActor* OutActor : OutActors)
-		{
-			AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
-			if (PC)
-			{
-				GameoverToClient(strWinner);
-			}
-		}
-
-		return;
-	}
-
 	for (AActor* OutActor : OutActors)
 	{
 		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
@@ -394,18 +363,31 @@ void AMyPlayerController::DeadToClient_Implementation(AMyCharacter* PlayCharacte
 		return;
 	}
 
+	this->CurrentPlayer = this->CurrentPlayer - 1;
+
+	if (this->CurrentPlayer == 1)
+	{
+		FString strWinner;
+
+		if (this->myCharacter->CurrentState == EPlayerState::ALIVE)
+		{
+			strWinner = this->PlayerName;
+		}
+
+		GameOver(strWinner);
+	}
+
 	PlayCharacter->CharacterAnim->SetDeadAnim();
 }
 
-void AMyPlayerController::GameOver()
+void AMyPlayerController::GameOver(const FString& WinnerName)
 {
 	if (!myCharacter)
 	{
 		return;
 	}
 
-	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
-	GameoverToServer(PlayerName);
+	GameoverToServer(WinnerName);
 }
 
 void AMyPlayerController::GameoverToServer_Implementation(const FString& WinnerName)
@@ -431,6 +413,7 @@ void AMyPlayerController::GameoverToClient_Implementation(const FString& WinnerN
 	HUD->SetWinnerName(WinnerName);
 	HUD->VisibleGameover();
 	SetShowMouseCursor(true);
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Gameover!"));
 }
 
 void AMyPlayerController::PlayerDeath()
@@ -447,6 +430,7 @@ void AMyPlayerController::PlayerDeath()
 
 	HUD->VisibleDeath();
 	SetShowMouseCursor(true);
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Dead!"));
 }
 
 void AMyPlayerController::SendMessage(const FText& Text)

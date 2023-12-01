@@ -108,7 +108,7 @@ public:
 	UFUNCTION(Client, Unreliable)
 		void DeadToClient(AMyCharacter* PlayCharacter);
 
-	void GameOver();
+	void GameOver(const FString& WinnerName);
 
 	UFUNCTION(Server, Unreliable)
 		void GameoverToServer(const FString& WinnerName);
