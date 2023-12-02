@@ -38,12 +38,6 @@ public:
 	UPROPERTY(Replicated)
 		int nPlayerNumber = 0;
 
-	UPROPERTY(Replicated)
-		bool bGameStart = false;
-
-	UPROPERTY(Replicated)
-		FString PlayerName;
-
 private:
 	void UpDown(float NewAxisValue);
 
@@ -62,10 +56,10 @@ public:
 	void PlayerEnter();
 
 	UFUNCTION(Server, Unreliable)
-		void PlayerEnterToServer(AMyCharacter* PlayCharacter, USkeletalMesh* PlayerMesh);
+		void PlayerEnterToServer(AMyCharacter* PlayCharacter);
 
 	UFUNCTION(Client, Unreliable)
-		void PlayerEnterToClient(AMyCharacter* PlayCharacter, int nCurrentPlayer, USkeletalMesh* PlayerMesh);
+		void PlayerEnterToClient(AMyCharacter* PlayCharacter);
 
 	// RPC ÇÔ¼ö
 	void PlayerOut();

@@ -20,7 +20,18 @@ void AMyPlayerController::OnPossess(APawn* aPawn)
 
 	myCharacter = Cast<AMyCharacter>(GetPawn());
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Success!"));
-	myCharacter->MyPC = this;
+
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	for (AActor* OutActor : OutActors)
+	{
+		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->PlayerEnterToClient(myCharacter);
+		}
+	}
 }
 
 void AMyPlayerController::PostInitializeComponents()
@@ -36,11 +47,6 @@ void AMyPlayerController::BeginPlay()
 
 	SetShowMouseCursor(false);
 	SetInputMode(FInputModeGameOnly());
-
-	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
-
-	PlayerName = MyGI->GetUserName("Player");
-	PlayerEnter();
 }
 
 
@@ -156,21 +162,12 @@ void AMyPlayerController::StopJumping()
 void AMyPlayerController::PlayerEnter()
 {
 	if (myCharacter)
-	{
-		TArray<AActor*> OutActors;
-		UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
-
-		nPlayerNumber = OutActors.Num() - 1;
-
-		UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
-
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Enter!"));
-		
-		PlayerEnterToServer(myCharacter, myCharacter->mySkeletalMesh->SkeletalMesh);
+	{	
+		PlayerEnterToServer(myCharacter);
 	}
 }
 
-void AMyPlayerController::PlayerEnterToServer_Implementation(AMyCharacter* PlayCharacter, USkeletalMesh* PlayerMesh)
+void AMyPlayerController::PlayerEnterToServer_Implementation(AMyCharacter* PlayCharacter)
 {
 	TArray<AActor*> OutActors;
 	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
@@ -180,20 +177,19 @@ void AMyPlayerController::PlayerEnterToServer_Implementation(AMyCharacter* PlayC
 		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
 		if (PC)
 		{
-			PC->PlayerEnterToClient(PlayCharacter, OutActors.Num(), PlayerMesh);
+			PC->PlayerEnterToClient(PlayCharacter);
 		}
 	}
 }
 
-void AMyPlayerController::PlayerEnterToClient_Implementation(AMyCharacter* PlayCharacter, int nCurrentPlayer, USkeletalMesh* PlayerMesh)
+void AMyPlayerController::PlayerEnterToClient_Implementation(AMyCharacter* PlayCharacter)
 {
 	if (PlayCharacter == NULL) // 캐릭터에 빙의되지 않은 경우에는 실행하지 않게하자.
 	{
 		return;
 	}
 
-	PlayCharacter->mySkeletalMesh->SetSkeletalMesh(PlayerMesh);
-	CurrentPlayer = nCurrentPlayer;
+
 }
 
 void AMyPlayerController::PlayerOut()
@@ -363,20 +359,6 @@ void AMyPlayerController::DeadToClient_Implementation(AMyCharacter* PlayCharacte
 		return;
 	}
 
-	this->CurrentPlayer = this->CurrentPlayer - 1;
-
-	if (this->CurrentPlayer == 1)
-	{
-		FString strWinner;
-
-		if (this->myCharacter->CurrentState == EPlayerState::ALIVE)
-		{
-			strWinner = this->PlayerName;
-		}
-
-		GameOver(strWinner);
-	}
-
 	PlayCharacter->CharacterAnim->SetDeadAnim();
 }
 
@@ -492,7 +474,5 @@ void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 	DOREPLIFETIME(AMyPlayerController, myCharacter);
 	DOREPLIFETIME(AMyPlayerController, CurrentPlayer);
-	DOREPLIFETIME(AMyPlayerController, bGameStart);
 	DOREPLIFETIME(AMyPlayerController, nPlayerNumber);
-	DOREPLIFETIME(AMyPlayerController, PlayerName);
 }
