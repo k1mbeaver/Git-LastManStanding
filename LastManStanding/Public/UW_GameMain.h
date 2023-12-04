@@ -23,6 +23,8 @@ public:
 	void SetWinnerName(const FString& WinnerName);
 	void VisibleGameover();
 	void VisibleDeath();
+	void HiddenGameReady();
+	void InitServerUI(bool bServer);
 
 private:
 	UPROPERTY(Meta = (BindWidget))
@@ -36,4 +38,7 @@ private:
 
 	UPROPERTY(Meta = (BindWidget))
 		class UUW_Death* WB_Death;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UUW_GameReady* WB_GameReady;
 };

@@ -27,6 +27,8 @@ public:
 	void SetWinnerName(const FString& WinnerName);
 	void VisibleGameover();
 	void VisibleDeath();
+	void HiddenGameReady();
+	void InitServerUI(bool bServer);
 
 private:
 	TSubclassOf<class UUW_GameMain> MainUIClass;

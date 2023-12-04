@@ -86,3 +86,13 @@ void AGameMain_HUD::VisibleDeath()
 {
 	MainUIObject->VisibleDeath();
 }
+
+void AGameMain_HUD::HiddenGameReady()
+{
+	MainUIObject->HiddenGameReady();
+}
+
+void AGameMain_HUD::InitServerUI(bool bServer)
+{
+	MainUIObject->InitServerUI(bServer);
+}

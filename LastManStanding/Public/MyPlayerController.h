@@ -110,6 +110,14 @@ public:
 	UFUNCTION(Client, Unreliable)
 		void GameoverToClient(const FString& WinnerName);
 
+	void ReadyStart();
+
+	UFUNCTION(Server, Unreliable)
+		void ReadyStartToServer();
+
+	UFUNCTION(Client, Unreliable)
+		void ReadyStartToClient();
+
 	void SendMessage(const FText& Text);
 
 	UFUNCTION()
@@ -127,4 +135,5 @@ public:
 	// 클라이언트 함수
 
 	void PlayerDeath();
+	void EnterGameReady(bool bServer);
 };

@@ -47,6 +47,18 @@ void AMyPlayerController::BeginPlay()
 
 	SetShowMouseCursor(false);
 	SetInputMode(FInputModeGameOnly());
+
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+
+	if (MyGI->GetIsServer("Player") == 0)
+	{
+		EnterGameReady(false);
+	}
+
+	else
+	{
+		EnterGameReady(true);
+	}
 }
 
 
@@ -466,6 +478,47 @@ void AMyPlayerController::StoC_SendMessage_Implementation(const FString& Message
 	if (HUD == nullptr) return;
 
 	HUD->AddChatMessage(Message);
+}
+
+void AMyPlayerController::EnterGameReady(bool bServer)
+{
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+	if (HUD == nullptr) return;
+
+	HUD->InitServerUI(bServer);
+}
+
+void AMyPlayerController::ReadyStart()
+{
+	ReadyStartToServer();
+}
+
+void AMyPlayerController::ReadyStartToServer_Implementation()
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	for (AActor* OutActor : OutActors)
+	{
+		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->ReadyStartToClient();
+		}
+	}
+}
+
+void AMyPlayerController::ReadyStartToClient_Implementation()
+{
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+	if (HUD == nullptr) return;
+
+	if (myCharacter)
+	{
+		myCharacter->OnCharacterStart();
+	}
+
+	HUD->HiddenGameReady();
 }
 
 void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

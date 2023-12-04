@@ -6,6 +6,7 @@
 #include "UW_Gameover.h"
 #include "UW_Mission.h"
 #include "UW_Death.h"
+#include "UW_GameReady.h"
 
 TSharedPtr<SWidget> UUW_GameMain::GetChatInputTextObject()
 {
@@ -45,4 +46,14 @@ void UUW_GameMain::VisibleGameover()
 void UUW_GameMain::VisibleDeath()
 {
 	WB_Death->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UUW_GameMain::HiddenGameReady()
+{
+	WB_GameReady->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UUW_GameMain::InitServerUI(bool bServer)
+{
+	WB_GameReady->InitServerUI(bServer);
 }

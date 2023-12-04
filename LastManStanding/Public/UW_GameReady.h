@@ -14,4 +14,15 @@ class LASTMANSTANDING_API UUW_GameReady : public UUserWidget
 {
 	GENERATED_BODY()
 	
+private:
+	UPROPERTY(Meta = (BindWidget))
+		class UButton* BtStart;
+
+protected:
+	virtual void NativeOnInitialized() override;
+
+public:
+	void GameStart();
+
+	void InitServerUI(bool bServer);
 };
