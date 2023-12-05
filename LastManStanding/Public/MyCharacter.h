@@ -50,6 +50,9 @@ public:
 	UPROPERTY(Replicated)
 		float AttackRadius;
 
+	UPROPERTY(VisibleAnywhere, Replicated)
+		FVector StartLocation;
+
 	UPROPERTY(Replicated)
 		EPlayerState CurrentState;
 
@@ -103,12 +106,4 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 		void MultiDead(AMyCharacter* DeathCharacter); // 캐릭터와 플레이어인경우 플레이어 컨트롤러도 받아온다.
-
-	// 이벤트
-	UFUNCTION(BlueprintNativeEvent)
-		void OnCharacterStart();
-	virtual void OnCharacterStart_Implementation()
-	{
-
-	}
 };

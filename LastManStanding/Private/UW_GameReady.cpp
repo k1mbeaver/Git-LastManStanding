@@ -5,12 +5,30 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "MyPlayerController.h"
+#include "ABGameInstance.h"
 
 void UUW_GameReady::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
 	BtStart = Cast<UButton>(GetWidgetFromName(TEXT("BtStart")));
+}
+
+void UUW_GameReady::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+
+	if (MyGI->GetIsServer("Player") == 0)
+	{
+		InitServerUI(false);
+	}
+
+	else
+	{
+		InitServerUI(true);
+	}
 }
 
 void UUW_GameReady::GameStart()

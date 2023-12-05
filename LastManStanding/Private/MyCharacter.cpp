@@ -13,6 +13,7 @@
 #include "ABGameInstance.h"
 #include "MyPlayerController.h"
 #include "DrawDebugHelpers.h"
+#include "NavigationSystem.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -278,4 +279,5 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AMyCharacter, AttackMontage);
 	DOREPLIFETIME(AMyCharacter, CurrentState);
 	DOREPLIFETIME(AMyCharacter, AttackPower);
+	DOREPLIFETIME(AMyCharacter, StartLocation);
 }

@@ -38,6 +38,9 @@ public:
 	UPROPERTY(Replicated)
 		int nPlayerNumber = 0;
 
+	UPROPERTY(Replicated)
+		FVector StartLocation;
+
 private:
 	void UpDown(float NewAxisValue);
 
@@ -131,6 +134,14 @@ public:
 
 	UFUNCTION(Client, Unreliable)
 		void StoC_SendMessage(const FString& Message);
+
+	void StartCharacter(AMyCharacter* PlayCharacter, FVector CharacterLocation);
+
+	UFUNCTION(Server, Unreliable)
+		void StartCharacterToServer(AMyCharacter* PlayCharacter, FVector CharacterLocation);
+
+	UFUNCTION(Client, Unreliable)
+		void StartCharacterToClient(AMyCharacter* PlayCharacter, FVector CharacterLocation);
 
 	// 클라이언트 함수
 

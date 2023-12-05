@@ -21,7 +21,10 @@ private:
 protected:
 	virtual void NativeOnInitialized() override;
 
+	virtual void NativeConstruct() override;
+
 public:
+	UFUNCTION(BlueprintCallable)
 	void GameStart();
 
 	void InitServerUI(bool bServer);

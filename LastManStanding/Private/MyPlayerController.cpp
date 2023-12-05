@@ -45,20 +45,11 @@ void AMyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetShowMouseCursor(false);
-	SetInputMode(FInputModeGameOnly());
+	SetShowMouseCursor(true);
+	SetInputMode(FInputModeUIOnly());
 
-	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
-
-	if (MyGI->GetIsServer("Player") == 0)
-	{
-		EnterGameReady(false);
-	}
-
-	else
-	{
-		EnterGameReady(true);
-	}
+	// 나중에 여러 좌표를 설정해서 소환하게끔 구현
+	StartLocation = FVector(1050.0f, -2920.0f, 142.0f);
 }
 
 
@@ -503,6 +494,7 @@ void AMyPlayerController::ReadyStartToServer_Implementation()
 		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
 		if (PC)
 		{
+			// 서버에서 캐릭터의 위치를 정하고 클라이언트 들에게 그 위치에 설정하도록 하자
 			PC->ReadyStartToClient();
 		}
 	}
@@ -515,10 +507,40 @@ void AMyPlayerController::ReadyStartToClient_Implementation()
 
 	if (myCharacter)
 	{
-		myCharacter->OnCharacterStart();
+		myCharacter->SetActorLocation(StartLocation);
+		StartCharacter(myCharacter, StartLocation);
 	}
 
 	HUD->HiddenGameReady();
+
+	SetShowMouseCursor(false);
+	SetInputMode(FInputModeGameOnly());
+}
+
+void AMyPlayerController::StartCharacter(AMyCharacter* PlayCharacter, FVector CharacterLocation)
+{
+	StartCharacterToServer(PlayCharacter, CharacterLocation);
+}
+
+void AMyPlayerController::StartCharacterToServer_Implementation(AMyCharacter* PlayCharacter, FVector CharacterLocation)
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	for (AActor* OutActor : OutActors)
+	{
+		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+		if (PC)
+		{
+			// 서버에서 캐릭터의 위치를 정하고 클라이언트 들에게 그 위치에 설정하도록 하자
+			PC->StartCharacterToClient(PlayCharacter, CharacterLocation);
+		}
+	}
+}
+
+void AMyPlayerController::StartCharacterToClient_Implementation(AMyCharacter* PlayCharacter, FVector CharacterLocation)
+{
+	PlayCharacter->SetActorLocation(CharacterLocation);
 }
 
 void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -528,4 +550,5 @@ void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AMyPlayerController, myCharacter);
 	DOREPLIFETIME(AMyPlayerController, CurrentPlayer);
 	DOREPLIFETIME(AMyPlayerController, nPlayerNumber);
+	DOREPLIFETIME(AMyPlayerController, StartLocation);
 }
