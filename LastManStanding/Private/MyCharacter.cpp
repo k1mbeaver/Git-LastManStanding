@@ -280,4 +280,5 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AMyCharacter, CurrentState);
 	DOREPLIFETIME(AMyCharacter, AttackPower);
 	DOREPLIFETIME(AMyCharacter, StartLocation);
+	DOREPLIFETIME(AMyCharacter, PlayerName);
 }

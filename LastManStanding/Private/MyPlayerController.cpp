@@ -20,18 +20,6 @@ void AMyPlayerController::OnPossess(APawn* aPawn)
 
 	myCharacter = Cast<AMyCharacter>(GetPawn());
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Success!"));
-
-	TArray<AActor*> OutActors;
-	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
-
-	for (AActor* OutActor : OutActors)
-	{
-		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
-		if (PC)
-		{
-			PC->PlayerEnterToClient(myCharacter);
-		}
-	}
 }
 
 void AMyPlayerController::PostInitializeComponents()
@@ -489,26 +477,32 @@ void AMyPlayerController::ReadyStartToServer_Implementation()
 	TArray<AActor*> OutActors;
 	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
 
+	int nIndex = 0;
+
 	for (AActor* OutActor : OutActors)
 	{
 		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
 		if (PC)
 		{
 			// 서버에서 캐릭터의 위치를 정하고 클라이언트 들에게 그 위치에 설정하도록 하자
-			PC->ReadyStartToClient();
+			PC->ReadyStartToClient(nIndex);
+			nIndex++;
 		}
 	}
 }
 
-void AMyPlayerController::ReadyStartToClient_Implementation()
+void AMyPlayerController::ReadyStartToClient_Implementation(int ServerNumber)
 {
 	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
 	if (HUD == nullptr) return;
 
 	if (myCharacter)
 	{
+		UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+
+		StartLocation = MyGI->GetLocation(ServerNumber);
 		myCharacter->SetActorLocation(StartLocation);
-		StartCharacter(myCharacter, StartLocation);
+		StartCharacter(myCharacter, StartLocation, MyGI->GetPlayerMesh("Player"), MyGI->GetUserName("Player"));
 	}
 
 	HUD->HiddenGameReady();
@@ -517,12 +511,12 @@ void AMyPlayerController::ReadyStartToClient_Implementation()
 	SetInputMode(FInputModeGameOnly());
 }
 
-void AMyPlayerController::StartCharacter(AMyCharacter* PlayCharacter, FVector CharacterLocation)
+void AMyPlayerController::StartCharacter(AMyCharacter* PlayCharacter, FVector CharacterLocation, USkeletalMesh* CharacterMesh, const FString& PlayerName)
 {
-	StartCharacterToServer(PlayCharacter, CharacterLocation);
+	StartCharacterToServer(PlayCharacter, CharacterLocation, CharacterMesh, PlayerName);
 }
 
-void AMyPlayerController::StartCharacterToServer_Implementation(AMyCharacter* PlayCharacter, FVector CharacterLocation)
+void AMyPlayerController::StartCharacterToServer_Implementation(AMyCharacter* PlayCharacter, FVector CharacterLocation, USkeletalMesh* CharacterMesh, const FString& PlayerName)
 {
 	TArray<AActor*> OutActors;
 	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
@@ -533,14 +527,16 @@ void AMyPlayerController::StartCharacterToServer_Implementation(AMyCharacter* Pl
 		if (PC)
 		{
 			// 서버에서 캐릭터의 위치를 정하고 클라이언트 들에게 그 위치에 설정하도록 하자
-			PC->StartCharacterToClient(PlayCharacter, CharacterLocation);
+			PC->StartCharacterToClient(PlayCharacter, CharacterLocation, CharacterMesh, PlayerName);
 		}
 	}
 }
 
-void AMyPlayerController::StartCharacterToClient_Implementation(AMyCharacter* PlayCharacter, FVector CharacterLocation)
+void AMyPlayerController::StartCharacterToClient_Implementation(AMyCharacter* PlayCharacter, FVector CharacterLocation, USkeletalMesh* CharacterMesh, const FString& PlayerName)
 {
 	PlayCharacter->SetActorLocation(CharacterLocation);
+	PlayCharacter->mySkeletalMesh->SetSkeletalMesh(CharacterMesh);
+	PlayCharacter->PlayerName = PlayerName;
 }
 
 void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

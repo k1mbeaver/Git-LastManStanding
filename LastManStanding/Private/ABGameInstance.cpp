@@ -7,6 +7,7 @@
 #include "MapDataTableClass.h"
 #include "MeshDataTableClass.h"
 #include "AnimationDataTableClass.h"
+#include "LocaitonDataTableClass.h"
 
 UABGameInstance::UABGameInstance()
 {
@@ -44,6 +45,13 @@ UABGameInstance::UABGameInstance()
 	if (DT_ANIMATION.Succeeded())
 	{
 		FAnimationTable = DT_ANIMATION.Object;
+	}
+
+	FString LocationDataPath = TEXT("DataTable'/Game/DataTable/LocationDataTable.LocationDataTable'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_LOCATION(*LocationDataPath);
+	if (DT_LOCATION.Succeeded())
+	{
+		FLocationTable = DT_LOCATION.Object;
 	}
 }
 
@@ -150,4 +158,12 @@ TArray<FName> UABGameInstance::GetMeshArray()
 {
 	TArray<FName> myMeshData = FMeshTable->GetRowNames();
 	return myMeshData;
+}
+
+FVector UABGameInstance::GetLocation(int myNumber)
+{
+	FString strNumber = FString::FromInt(myNumber);
+	FLocationDataTable* LocationData = FLocationTable->FindRow<FLocationDataTable>(*strNumber, TEXT(""));
+	FVector myLocation = LocationData->SpawnLocation;
+	return myLocation;
 }

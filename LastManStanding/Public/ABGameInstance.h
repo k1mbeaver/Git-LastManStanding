@@ -35,6 +35,7 @@ public:
 	int GetMonsterSize(FString MapName);
 	UAnimMontage* GetMontage(FString MontageName);
 	TArray<FName> GetMeshArray();
+	FVector GetLocation(int myNumber);
 
 private:
 	UPROPERTY()
@@ -51,4 +52,7 @@ private:
 
 	UPROPERTY()
 		UDataTable* FAnimationTable;
+
+	UPROPERTY()
+		UDataTable* FLocationTable;
 };

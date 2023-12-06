@@ -58,6 +58,9 @@ public:
 
 	UPROPERTY(Replicated)
 		float AttackPower;
+
+	UPROPERTY(Replicated)
+		FString PlayerName;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

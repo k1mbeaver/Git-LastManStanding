@@ -119,7 +119,7 @@ public:
 		void ReadyStartToServer();
 
 	UFUNCTION(Client, Unreliable)
-		void ReadyStartToClient();
+		void ReadyStartToClient(int ServerNumber);
 
 	void SendMessage(const FText& Text);
 
@@ -135,13 +135,13 @@ public:
 	UFUNCTION(Client, Unreliable)
 		void StoC_SendMessage(const FString& Message);
 
-	void StartCharacter(AMyCharacter* PlayCharacter, FVector CharacterLocation);
+	void StartCharacter(AMyCharacter* PlayCharacter, FVector CharacterLocation, USkeletalMesh* CharacterMesh, const FString& PlayerName);
 
 	UFUNCTION(Server, Unreliable)
-		void StartCharacterToServer(AMyCharacter* PlayCharacter, FVector CharacterLocation);
+		void StartCharacterToServer(AMyCharacter* PlayCharacter, FVector CharacterLocation, USkeletalMesh* CharacterMesh, const FString& PlayerName);
 
 	UFUNCTION(Client, Unreliable)
-		void StartCharacterToClient(AMyCharacter* PlayCharacter, FVector CharacterLocation);
+		void StartCharacterToClient(AMyCharacter* PlayCharacter, FVector CharacterLocation, USkeletalMesh* CharacterMesh, const FString& PlayerName);
 
 	// 클라이언트 함수
 
