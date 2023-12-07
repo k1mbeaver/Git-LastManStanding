@@ -45,6 +45,17 @@ void AMyPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bStart)
+	{
+		if (DeathCount == DefaultCount)
+		{
+			if (myCharacter->CurrentState == EPlayerState::ALIVE)
+			{
+				GameOver();
+				bStart = false;
+			}
+		}
+	}
 }
 
 void AMyPlayerController::SetupInputComponent()
@@ -205,7 +216,7 @@ void AMyPlayerController::PlayerOutToServer_Implementation()
 
 void AMyPlayerController::PlayerOutToClient_Implementation()
 {
-	CurrentPlayer = CurrentPlayer - 1;
+	//
 }
 
 void AMyPlayerController::Run()
@@ -285,6 +296,83 @@ void AMyPlayerController::StopRunToClient_Implementation(AMyCharacter* PlayChara
 	PlayCharacter->StopRun();
 }
 
+void AMyPlayerController::Dancing()
+{
+	if (!myCharacter)
+	{
+		return;
+	}
+
+	if (myCharacter->CurrentState == EPlayerState::ALIVE)
+	{
+		RunToServer(myCharacter);
+	}
+}
+
+void AMyPlayerController::DancingToServer_Implementation(AMyCharacter* PlayCharacter)
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	for (AActor* OutActor : OutActors)
+	{
+		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+		if (PC)
+		{
+			PlayCharacter->Run();
+			PC->RunToClient(PlayCharacter);
+		}
+	}
+}
+
+void AMyPlayerController::DancingToClient_Implementation(AMyCharacter* PlayCharacter)
+{
+	if (PlayCharacter == NULL) // 캐릭터에 빙의되지 않은 경우에는 실행하지 않게하자.
+	{
+		return;
+	}
+
+	PlayCharacter->Run();
+}
+
+void AMyPlayerController::StopDancing()
+{
+	if (!myCharacter)
+	{
+		return;
+	}
+
+	if (myCharacter->CurrentState == EPlayerState::ALIVE)
+	{
+		StopRunToServer(myCharacter);
+	}
+}
+
+void AMyPlayerController::StopDancingToServer_Implementation(AMyCharacter* PlayCharacter)
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	for (AActor* OutActor : OutActors)
+	{
+		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->StopRunToClient(PlayCharacter);
+		}
+	}
+}
+
+void AMyPlayerController::StopDancingToClient_Implementation(AMyCharacter* PlayCharacter)
+{
+	if (PlayCharacter == NULL) // 캐릭터에 빙의되지 않은 경우에는 실행하지 않게하자.
+	{
+		return;
+	}
+
+	PlayCharacter->StopRun();
+}
+
 void AMyPlayerController::Attack()
 {
 	if (!myCharacter)
@@ -351,15 +439,19 @@ void AMyPlayerController::DeadToClient_Implementation(AMyCharacter* PlayCharacte
 	}
 
 	PlayCharacter->CharacterAnim->SetDeadAnim();
+
+	DeathCount++;
 }
 
-void AMyPlayerController::GameOver(const FString& WinnerName)
+void AMyPlayerController::GameOver()
 {
 	if (!myCharacter)
 	{
 		return;
 	}
 
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+	FString WinnerName = MyGI->GetUserName("Player");
 	GameoverToServer(WinnerName);
 }
 
@@ -485,13 +577,13 @@ void AMyPlayerController::ReadyStartToServer_Implementation()
 		if (PC)
 		{
 			// 서버에서 캐릭터의 위치를 정하고 클라이언트 들에게 그 위치에 설정하도록 하자
-			PC->ReadyStartToClient(nIndex);
+			PC->ReadyStartToClient(nIndex, OutActors.Num());
 			nIndex++;
 		}
 	}
 }
 
-void AMyPlayerController::ReadyStartToClient_Implementation(int ServerNumber)
+void AMyPlayerController::ReadyStartToClient_Implementation(int ServerNumber, int PlayerCount)
 {
 	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
 	if (HUD == nullptr) return;
@@ -502,6 +594,8 @@ void AMyPlayerController::ReadyStartToClient_Implementation(int ServerNumber)
 
 		StartLocation = MyGI->GetLocation(ServerNumber);
 		myCharacter->SetActorLocation(StartLocation);
+		DefaultCount = PlayerCount;
+		bStart = true;
 		StartCharacter(myCharacter, StartLocation, MyGI->GetPlayerMesh("Player"), MyGI->GetUserName("Player"));
 	}
 
@@ -544,7 +638,9 @@ void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMyPlayerController, myCharacter);
-	DOREPLIFETIME(AMyPlayerController, CurrentPlayer);
+	DOREPLIFETIME(AMyPlayerController, DeathCount);
+	DOREPLIFETIME(AMyPlayerController, DefaultCount);
 	DOREPLIFETIME(AMyPlayerController, nPlayerNumber);
 	DOREPLIFETIME(AMyPlayerController, StartLocation);
+	DOREPLIFETIME(AMyPlayerController, bStart);
 }

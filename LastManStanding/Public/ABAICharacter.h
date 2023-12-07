@@ -20,6 +20,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
+private:
+	TArray<FString> ArrMeshName = { "Man1", "Man2", "Man3", "Man4" };
+
+	int RandomMesh(int min, int max); // 랜덤값 구하기
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

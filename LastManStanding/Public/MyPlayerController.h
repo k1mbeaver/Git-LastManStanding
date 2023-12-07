@@ -33,10 +33,16 @@ private:
 
 public:
 	UPROPERTY(Replicated)
-		int CurrentPlayer = 0;
+		int DeathCount = 1;
+
+	UPROPERTY(Replicated)
+		int DefaultCount = 0;
 
 	UPROPERTY(Replicated)
 		int nPlayerNumber = 0;
+
+	UPROPERTY(Replicated)
+		bool bStart = false;
 
 	UPROPERTY(Replicated)
 		FVector StartLocation;
@@ -89,6 +95,22 @@ public:
 	UFUNCTION(Client, Unreliable)
 		void StopRunToClient(AMyCharacter* PlayCharacter);
 
+	void Dancing();
+
+	UFUNCTION(Server, Unreliable)
+		void DancingToServer(AMyCharacter* PlayCharacter);
+
+	UFUNCTION(Client, Unreliable)
+		void DancingToClient(AMyCharacter* PlayCharacter);
+
+	void StopDancing();
+
+	UFUNCTION(Server, Unreliable)
+		void StopDancingToServer(AMyCharacter* PlayCharacter);
+
+	UFUNCTION(Client, Unreliable)
+		void StopDancingToClient(AMyCharacter* PlayCharacter);
+
 	void Attack();
 
 	UFUNCTION(Server, Unreliable)
@@ -105,7 +127,7 @@ public:
 	UFUNCTION(Client, Unreliable)
 		void DeadToClient(AMyCharacter* PlayCharacter);
 
-	void GameOver(const FString& WinnerName);
+	void GameOver();
 
 	UFUNCTION(Server, Unreliable)
 		void GameoverToServer(const FString& WinnerName);
@@ -119,7 +141,7 @@ public:
 		void ReadyStartToServer();
 
 	UFUNCTION(Client, Unreliable)
-		void ReadyStartToClient(int ServerNumber);
+		void ReadyStartToClient(int ServerNumber, int PlayerCount);
 
 	void SendMessage(const FText& Text);
 

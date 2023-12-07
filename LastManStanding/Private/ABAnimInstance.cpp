@@ -37,9 +37,13 @@ void UABAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UABAnimInstance::PlayAttackMontage(UAnimMontage* playPunch)
 {
-	//ABCHECK(!IsDead);
 	Montage_Play(playPunch, 1.0f);
 	PunchAnimation_Punch.Broadcast();
+}
+
+void UABAnimInstance::PlayDanceMontage(UAnimMontage* playDance)
+{
+	Montage_Play(playDance, 1.0f);
 }
 
 UAnimMontage* UABAnimInstance::GetAttackMontage()
@@ -57,6 +61,18 @@ void UABAnimInstance::AnimNotify_OnCollisonEnd_Punch()
 {
 	ABLOG_S(Warning);
 	OnOnCollisonEnd_Punch.Broadcast();
+}
+
+void UABAnimInstance::AnimNotify_DancingStart_Mission()
+{
+	ABLOG_S(Warning);
+	DancingStart_Mission.Broadcast();
+}
+
+void UABAnimInstance::AnimNotify_DancingEnd_Mission()
+{
+	ABLOG_S(Warning);
+	DancingEnd_Mission.Broadcast();
 }
 
 void UABAnimInstance::SetDeadAnim()

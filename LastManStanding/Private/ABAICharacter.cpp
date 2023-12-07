@@ -4,6 +4,7 @@
 #include "ABAICharacter.h"
 #include "ABAnimInstance.h"
 #include "ABAIController.h"
+#include "ABGameInstance.h"
 #include <random>
 
 // Sets default values
@@ -48,7 +49,13 @@ void AABAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+	int nRandomNum = RandomMesh(0, 3);
+
+
 	ABAIController = Cast<AABAIController>(GetController());
+	GetMesh()->SetSkeletalMesh(MyGI->GetSkeletalMesh(ArrMeshName[nRandomNum]));
+	GetMesh()->SetAnimInstanceClass(MyGI->GetAninInstance(ArrMeshName[nRandomNum]));
 	ABAnim = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
@@ -84,6 +91,13 @@ float AABAICharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 	return FinalDamage;
 }
 
+int AABAICharacter::RandomMesh(int min, int max)
+{
+	std::random_device rd;
+	std::mt19937_64 rEngine(rd());
+	std::uniform_int_distribution<>dist(min, max);
+	return static_cast<int>(dist(rEngine));
+}
 void AABAICharacter::MultiDead_Implementation(AABAICharacter* DeathCharacter)
 {
 	DeathCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
