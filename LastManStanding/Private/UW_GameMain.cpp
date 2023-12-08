@@ -23,16 +23,6 @@ void UUW_GameMain::SetPlayerMissionClear(int nMissionClear)
 	WB_UserMission->SetPlayerMissionClear(nMissionClear);
 }
 
-void UUW_GameMain::PlayerKillingMissionAppear()
-{
-	WB_UserMission->PlayerKillingMissionAppear();
-}
-
-void UUW_GameMain::SetPlayerKillingPoint(int nKillingPoint)
-{
-	WB_UserMission->SetPlayerKillingPoint(nKillingPoint);
-}
-
 void UUW_GameMain::SetWinnerName(const FString& WinnerName)
 {
 	WB_GameOver->SetWinnerName(WinnerName);

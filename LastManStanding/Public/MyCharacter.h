@@ -32,6 +32,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Replicated, Category = Mesh)
 		class UAnimMontage* AttackMontage;
 
+	UPROPERTY(VisibleAnywhere, Replicated, Category = Mesh)
+		class UAnimMontage* DanceMontage;
+
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class USpringArmComponent* SpringArm;
 
@@ -70,6 +73,7 @@ private:
 		class UGameplayStatics* GameStatic;
 
 	bool IsAttacking = false;
+	bool bCanMove = true;
 
 public:	
 	AMyCharacter();
@@ -102,6 +106,12 @@ public:
 	void Attack();
 
 	void AttackCheck();
+
+	void Dancing();
+
+	void DanceComplete();
+
+	void StopDancing();
 
 public:
 	UFUNCTION(BlueprintCallable)

@@ -18,8 +18,6 @@ public:
 	TSharedPtr<class SWidget> GetChatInputTextObject();
 	void AddChatMessage(const FString& Message);
 	void SetPlayerMissionClear(int nMissionClear);
-	void PlayerKillingMissionAppear();
-	void SetPlayerKillingPoint(int nKillingPoint);
 	void SetWinnerName(const FString& WinnerName);
 	void VisibleGameover();
 	void VisibleDeath();

@@ -42,7 +42,14 @@ public:
 		int nPlayerNumber = 0;
 
 	UPROPERTY(Replicated)
+		int nMissionComplete = 0;
+
+	UPROPERTY(Replicated)
 		bool bStart = false;
+
+	// 우승자만 true로 되도록 하자
+	UPROPERTY(Replicated)
+		bool bWinner = false;
 
 	UPROPERTY(Replicated)
 		FVector StartLocation;
@@ -169,4 +176,5 @@ public:
 
 	void PlayerDeath();
 	void EnterGameReady(bool bServer);
+	void DanceComplete();
 };

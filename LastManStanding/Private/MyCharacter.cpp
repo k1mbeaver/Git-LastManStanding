@@ -55,11 +55,13 @@ void AMyCharacter::BeginPlay()
 	mySkeletalMesh->SetAnimInstanceClass(MyGI->GetPlayerAnim("Player"));
 	CharacterAnim = Cast<UABAnimInstance>(mySkeletalMesh->GetAnimInstance());
 	AttackMontage = MyGI->GetMontage("Attack");
+	DanceMontage = MyGI->GetMontage("Dance");
 
 	GetCharacterMovement()->JumpZVelocity = 400.0f;
 	GetCharacterMovement()->MaxWalkSpeed = fCurrentWalkSpeed;
 
 	CharacterAnim->OnOnCollisonStart_Punch.AddUObject(this, &AMyCharacter::AttackCheck);
+	CharacterAnim->DancingEnd_Mission.AddUObject(this, &AMyCharacter::DanceComplete);
 	
 	/*
 	SpringArm->TargetArmLength = 450.0f;
@@ -94,6 +96,11 @@ void AMyCharacter::UpDown(float NewAxisValue)
 		return;
 	}
 
+	if (!bCanMove)
+	{
+		return;
+	}
+
 	FVector Direction = FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X);
 
 	Direction.Z = 0.0f;
@@ -105,6 +112,11 @@ void AMyCharacter::UpDown(float NewAxisValue)
 void AMyCharacter::LeftRight(float NewAxisValue)
 {
 	if (this == nullptr)
+	{
+		return;
+	}
+
+	if (!bCanMove)
 	{
 		return;
 	}
@@ -144,6 +156,11 @@ void AMyCharacter::Run()
 		return;
 	}
 
+	if (!bCanMove)
+	{
+		return;
+	}
+
 	GetCharacterMovement()->MaxWalkSpeed = fCurrentRunSpeed;
 }
 
@@ -153,12 +170,23 @@ void AMyCharacter::StopRun()
 	{
 		return;
 	}
+
+	if (!bCanMove)
+	{
+		return;
+	}
+
 	GetCharacterMovement()->MaxWalkSpeed = fCurrentWalkSpeed;
 }
 
 void AMyCharacter::Jump()
 {
 	if (this == nullptr)
+	{
+		return;
+	}
+
+	if (!bCanMove)
 	{
 		return;
 	}
@@ -173,7 +201,48 @@ void AMyCharacter::StopJumping()
 		return;
 	}
 
+	if (!bCanMove)
+	{
+		return;
+	}
+
 	Super::StopJumping();
+}
+
+void AMyCharacter::Dancing()
+{
+	if (this == nullptr)
+	{
+		return;
+	}
+
+	bCanMove = false;
+	CharacterAnim->PlayDanceMontage(DanceMontage);
+}
+
+void AMyCharacter::DanceComplete()
+{
+	if (this == nullptr)
+	{
+		return;
+	}
+
+	bCanMove = true;
+	CharacterAnim->StopAllMontages(true);
+
+	MyPC = Cast<AMyPlayerController>(GetController());
+	MyPC->DanceComplete();
+}
+
+void AMyCharacter::StopDancing()
+{
+	if (this == nullptr)
+	{
+		return;
+	}
+
+	bCanMove = true;
+	CharacterAnim->StopAllMontages(true);
 }
 
 void AMyCharacter::Attack()
@@ -281,4 +350,5 @@ void AMyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AMyCharacter, AttackPower);
 	DOREPLIFETIME(AMyCharacter, StartLocation);
 	DOREPLIFETIME(AMyCharacter, PlayerName);
+	DOREPLIFETIME(AMyCharacter, DanceMontage);
 }

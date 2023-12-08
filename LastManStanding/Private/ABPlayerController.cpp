@@ -117,9 +117,6 @@ void AABPlayerController::BeginPlay()
 
 void AABPlayerController::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	// 여기서 Killing Point 세자
-	SetPlayerKillingPoint(myCharacter->nKillingCharacter);
-
 	if (myCharacter->nKillingCharacter == 10 || myCharacter->nPlayerKill == myCharacter->nNowPlayer - 1)
 	{
 		UABGameInstance* MyGI = GetGameInstance<UABGameInstance>(); // GameInstance를 직접 만들어서 사용
@@ -353,20 +350,6 @@ void AABPlayerController::SetPlayerMissionClear(int nMissionClear)
 	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
 	if (HUD == nullptr) return;
 	HUD->SetPlayerMissionClear(nMissionClear);
-}
-
-void AABPlayerController::PlayerKillingMissionAppear()
-{
-	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
-	if (HUD == nullptr) return;
-	HUD->PlayerKillingMissionAppear();
-}
-
-void AABPlayerController::SetPlayerKillingPoint(int nKillingPoint)
-{
-	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
-	if (HUD == nullptr) return;
-	HUD->SetPlayerKillingPoint(nKillingPoint);
 }
 
 // 게임 끝

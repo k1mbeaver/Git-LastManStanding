@@ -51,9 +51,14 @@ void AMyPlayerController::Tick(float DeltaTime)
 		{
 			if (myCharacter->CurrentState == EPlayerState::ALIVE)
 			{
-				GameOver();
-				bStart = false;
+				bWinner = true;
 			}
+		}
+
+		if (bWinner)
+		{
+			GameOver();
+			bStart = false;
 		}
 	}
 }
@@ -81,6 +86,11 @@ void AMyPlayerController::SetupInputComponent()
 
 	// 캐릭터 공격
 	InputComponent->BindAction(TEXT("Attack"), IE_Pressed, this, &AMyPlayerController::Attack);
+
+	// 캐릭터 댄스
+	InputComponent->BindAction(TEXT("Dance"), IE_Pressed, this, &AMyPlayerController::Dancing);
+	InputComponent->BindAction(TEXT("Dance"), IE_Released, this, &AMyPlayerController::StopDancing);
+
 }
 
 void AMyPlayerController::UpDown(float NewAxisValue)
@@ -296,6 +306,26 @@ void AMyPlayerController::StopRunToClient_Implementation(AMyCharacter* PlayChara
 	PlayCharacter->StopRun();
 }
 
+void AMyPlayerController::DanceComplete()
+{
+	if (!myCharacter)
+	{
+		return;
+	}
+
+	nMissionComplete++;
+
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+	if (HUD == nullptr) return;
+
+	HUD->SetPlayerMissionClear(nMissionComplete);
+
+	if (nMissionComplete == 50)
+	{
+		bWinner = true;
+	}
+}
+
 void AMyPlayerController::Dancing()
 {
 	if (!myCharacter)
@@ -305,7 +335,7 @@ void AMyPlayerController::Dancing()
 
 	if (myCharacter->CurrentState == EPlayerState::ALIVE)
 	{
-		RunToServer(myCharacter);
+		DancingToServer(myCharacter);
 	}
 }
 
@@ -319,8 +349,7 @@ void AMyPlayerController::DancingToServer_Implementation(AMyCharacter* PlayChara
 		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
 		if (PC)
 		{
-			PlayCharacter->Run();
-			PC->RunToClient(PlayCharacter);
+			PC->DancingToClient(PlayCharacter);
 		}
 	}
 }
@@ -332,7 +361,7 @@ void AMyPlayerController::DancingToClient_Implementation(AMyCharacter* PlayChara
 		return;
 	}
 
-	PlayCharacter->Run();
+	PlayCharacter->Dancing();
 }
 
 void AMyPlayerController::StopDancing()
@@ -344,7 +373,7 @@ void AMyPlayerController::StopDancing()
 
 	if (myCharacter->CurrentState == EPlayerState::ALIVE)
 	{
-		StopRunToServer(myCharacter);
+		StopDancingToServer(myCharacter);
 	}
 }
 
@@ -358,7 +387,7 @@ void AMyPlayerController::StopDancingToServer_Implementation(AMyCharacter* PlayC
 		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
 		if (PC)
 		{
-			PC->StopRunToClient(PlayCharacter);
+			PC->StopDancingToClient(PlayCharacter);
 		}
 	}
 }
@@ -370,7 +399,7 @@ void AMyPlayerController::StopDancingToClient_Implementation(AMyCharacter* PlayC
 		return;
 	}
 
-	PlayCharacter->StopRun();
+	PlayCharacter->StopDancing();
 }
 
 void AMyPlayerController::Attack()
@@ -643,4 +672,6 @@ void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AMyPlayerController, nPlayerNumber);
 	DOREPLIFETIME(AMyPlayerController, StartLocation);
 	DOREPLIFETIME(AMyPlayerController, bStart);
+	DOREPLIFETIME(AMyPlayerController, nMissionComplete);
+	DOREPLIFETIME(AMyPlayerController, bWinner);
 }

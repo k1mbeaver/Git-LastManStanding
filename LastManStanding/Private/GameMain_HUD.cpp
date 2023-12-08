@@ -62,16 +62,6 @@ void AGameMain_HUD::SetPlayerMissionClear(int nMissionClear)
 	MainUIObject->SetPlayerMissionClear(nMissionClear);
 }
 
-void AGameMain_HUD::PlayerKillingMissionAppear()
-{
-	MainUIObject->PlayerKillingMissionAppear();
-}
-
-void AGameMain_HUD::SetPlayerKillingPoint(int nKillingPoint)
-{
-	MainUIObject->SetPlayerKillingPoint(nKillingPoint);
-}
-
 void AGameMain_HUD::SetWinnerName(const FString& WinnerName)
 {
 	MainUIObject->SetWinnerName(WinnerName);

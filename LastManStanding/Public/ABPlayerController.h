@@ -48,8 +48,6 @@ public:
 		bool bCanDeligate = false;
 
 	void SetPlayerMissionClear(int nMissionClear);
-	void PlayerKillingMissionAppear();
-	void SetPlayerKillingPoint(int nKillingPoint);
 
 	// ∞‘¿” ≥°
 
