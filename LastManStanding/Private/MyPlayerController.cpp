@@ -319,6 +319,7 @@ void AMyPlayerController::DanceComplete()
 	if (HUD == nullptr) return;
 
 	HUD->SetPlayerMissionClear(nMissionComplete);
+	StopDancing();
 
 	if (nMissionComplete == 50)
 	{
