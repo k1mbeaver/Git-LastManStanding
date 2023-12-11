@@ -20,6 +20,8 @@ void UUW_ReadyRoom::NativeOnInitialized()
 	IPBox = Cast<UEditableTextBox>(GetWidgetFromName(TEXT("IPBox")));
 	IP = Cast<UTextBlock>(GetWidgetFromName(TEXT("IP")));
 	MeshCB = Cast<UComboBoxString>(GetWidgetFromName(TEXT("MeshCB")));
+	TextPlayer = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextPlayer")));
+	PlayerCB = Cast<UComboBoxString>(GetWidgetFromName(TEXT("PlayerCB")));
 }
 
 
@@ -42,6 +44,12 @@ void UUW_ReadyRoom::NativeConstruct()
 		MeshCB->AddOption(RowName.ToString());
 	}
 
+	for (int i = 2; i <= MyGI->GetMaxServerPlayer("Player"); i++)
+	{
+		FString strNumber = FString::FromInt(i);
+		PlayerCB->AddOption(strNumber);
+	}
+
 	MeshCB->SetSelectedOption("Man1");
 }
 
@@ -51,8 +59,11 @@ void UUW_ReadyRoom::PlayHandler()
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 	if (MyPC)
 	{
+		FString getStr = PlayerCB->GetSelectedOption();
+		int nServerPlayer = FCString::Atoi(*getStr);
 		MyGI->SetPlayerMesh("Player", MyGI->GetSkeletalMesh(MeshCB->GetSelectedOption()));
 		MyGI->SetPlayerAnim("Player", MyGI->GetAninInstance(MeshCB->GetSelectedOption()));
+		MyGI->SetServerPlayer("Player", nServerPlayer);
 		MyPC->Play();
 	}
 }
@@ -92,6 +103,12 @@ void UUW_ReadyRoom::HiddenIPBox()
 {
 	IP->SetVisibility(ESlateVisibility::Hidden);
 	IPBox->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UUW_ReadyRoom::HiddenServerPlayer()
+{
+	TextPlayer->SetVisibility(ESlateVisibility::Hidden);
+	PlayerCB->SetVisibility(ESlateVisibility::Hidden);
 }
 
 FString UUW_ReadyRoom::GetTextBox()

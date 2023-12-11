@@ -47,3 +47,13 @@ void UUW_GameMain::InitServerUI(bool bServer)
 {
 	WB_GameReady->InitServerUI(bServer);
 }
+
+void UUW_GameMain::SetCurrentPlayer(int nCurrentPlayer)
+{
+	WB_GameReady->SetCurrentPlayer(nCurrentPlayer);
+}
+
+void UUW_GameMain::SetDefaultPlayer(int nDefaultPlayer)
+{
+	WB_GameReady->SetDefaultPlayer(nDefaultPlayer);
+}

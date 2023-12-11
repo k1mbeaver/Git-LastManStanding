@@ -19,6 +19,11 @@ void UUW_ReadyRoomMain::HiddenIPBox()
 	WB_ReadyRoom->HiddenIPBox();
 }
 
+void UUW_ReadyRoomMain::HiddenServerPlayer()
+{
+	WB_ReadyRoom->HiddenServerPlayer();
+}
+
 FString UUW_ReadyRoomMain::GetTextBox()
 {
 	return WB_ReadyRoom->GetTextBox();

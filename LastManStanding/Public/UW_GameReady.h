@@ -18,6 +18,12 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 		class UButton* BtStart;
 
+	UPROPERTY(Meta = (BindWidget))
+		class UTextBlock* TextCurrentPlayer;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UTextBlock* TextDefaultPlayer;
+
 protected:
 	virtual void NativeOnInitialized() override;
 
@@ -28,4 +34,8 @@ public:
 	void GameStart();
 
 	void InitServerUI(bool bServer);
+
+	void SetDefaultPlayer(int nDefaultPlayer);
+
+	void SetCurrentPlayer(int nCurrentPlayer);
 };

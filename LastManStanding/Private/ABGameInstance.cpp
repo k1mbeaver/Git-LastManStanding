@@ -111,6 +111,26 @@ void UABGameInstance::SetIsServer(FString Player, int ServerAndClient)
 	// 일단 여기까지 하고 대기방 구현후 다시 진행하자
 }
 
+int UABGameInstance::GetServerPlayer(FString Player)
+{
+	FPlayerData* PlayerData = FPlayerTable->FindRow<FPlayerData>(*Player, TEXT(""));
+	int nServerPlayer = PlayerData->ServerPlayer;
+	return nServerPlayer;
+}
+
+int UABGameInstance::GetMaxServerPlayer(FString Player)
+{
+	FPlayerData* PlayerData = FPlayerTable->FindRow<FPlayerData>(*Player, TEXT(""));
+	int nServerPlayer = PlayerData->MaxServerPlayer;
+	return nServerPlayer;
+}
+
+void UABGameInstance::SetServerPlayer(FString Player, int nServerPlayer)
+{
+	FPlayerData* PlayerData = FPlayerTable->FindRow<FPlayerData>(*Player, TEXT(""));
+	PlayerData->ServerPlayer = nServerPlayer;
+}
+
 USoundWave* UABGameInstance::GetSound(FString SoundName)
 {
 	FSoundDataTable* SoundData = FSoundTable->FindRow<FSoundDataTable>(*SoundName, TEXT(""));

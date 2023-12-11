@@ -21,6 +21,7 @@ public:
 	void VisiblePlayButton();
 	void VisibleJoinButton();
 	void HiddenIPBox();
+	void HiddenServerPlayer();
 	FString GetTextBox();
 	FString GetIp();
 	//void VisibleJoinButton();

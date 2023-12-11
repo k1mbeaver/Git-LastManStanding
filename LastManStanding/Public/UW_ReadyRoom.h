@@ -28,6 +28,10 @@ private:
 		class UTextBlock* IP;
 	UPROPERTY(Meta = (BindWidget))
 		class UComboBoxString* MeshCB;
+	UPROPERTY(Meta = (BindWidget))
+		class UTextBlock* TextPlayer;
+	UPROPERTY(Meta = (BindWidget))
+		class UComboBoxString* PlayerCB;
 
 public:
 
@@ -44,6 +48,8 @@ public:
 	void VisibleJoinButton();
 
 	void HiddenIPBox();
+
+	void HiddenServerPlayer();
 
 	FString GetTextBox();
 

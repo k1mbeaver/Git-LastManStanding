@@ -31,6 +31,7 @@ void AReadyRoomMain_HUD::BeginPlay()
 	else if (MyGI->GetIsServer("Player") == 0)
 	{
 		VisibleJoinButton();
+		HiddenServerPlayer();
 	}
 }
 
@@ -70,6 +71,11 @@ void AReadyRoomMain_HUD::VisibleJoinButton()
 void AReadyRoomMain_HUD::HiddenIPBox()
 {
 	ReadyRoomMainUIObject->HiddenIPBox();
+}
+
+void AReadyRoomMain_HUD::HiddenServerPlayer()
+{
+	ReadyRoomMainUIObject->HiddenServerPlayer();
 }
 
 FString AReadyRoomMain_HUD::GetTextBox()

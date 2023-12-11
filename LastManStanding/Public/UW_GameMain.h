@@ -23,6 +23,8 @@ public:
 	void VisibleDeath();
 	void HiddenGameReady();
 	void InitServerUI(bool bServer);
+	void SetCurrentPlayer(int nCurrentPlayer);
+	void SetDefaultPlayer(int nDefaultPlayer);
 
 private:
 	UPROPERTY(Meta = (BindWidget))

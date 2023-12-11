@@ -22,6 +22,9 @@ public:
 	UABGameInstance();
 	FString GetUserName(FString Player);
 	void SetUserName(FString Player, FString UserName);
+	int GetServerPlayer(FString Player);
+	void SetServerPlayer(FString Player, int nServerPlayer);
+	int GetMaxServerPlayer(FString Player);
 	int GetIsServer(FString Player);
 	void SetIsServer(FString Player, int ServerAndClient);
 	void SetPlayerMesh(FString Player, USkeletalMesh* myMesh);

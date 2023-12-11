@@ -27,6 +27,12 @@ public:
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 			TSubclassOf<class UAnimInstance> MyAnimation;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+			int ServerPlayer;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+			int MaxServerPlayer;
 };
 UCLASS()
 class LASTMANSTANDING_API AACustoDataTables : public AActor

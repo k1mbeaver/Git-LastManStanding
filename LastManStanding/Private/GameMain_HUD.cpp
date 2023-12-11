@@ -86,3 +86,13 @@ void AGameMain_HUD::InitServerUI(bool bServer)
 {
 	MainUIObject->InitServerUI(bServer);
 }
+
+void AGameMain_HUD::SetCurrentPlayer(int nCurrentPlayer)
+{
+	MainUIObject->SetCurrentPlayer(nCurrentPlayer);
+}
+
+void AGameMain_HUD::SetDefaultPlayer(int nDefaultPlayer)
+{
+	MainUIObject->SetDefaultPlayer(nDefaultPlayer);
+}
