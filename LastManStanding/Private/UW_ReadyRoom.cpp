@@ -16,6 +16,7 @@ void UUW_ReadyRoom::NativeOnInitialized()
 
 	BtPlay = Cast<UButton>(GetWidgetFromName(TEXT("BtPlay")));
 	BtDecide = Cast<UButton>(GetWidgetFromName(TEXT("BtDecide")));
+	BtBack = Cast<UButton>(GetWidgetFromName(TEXT("BtBack")));
 	PlayerOne = Cast<UEditableTextBox>(GetWidgetFromName(TEXT("PlayerOne")));
 	IPBox = Cast<UEditableTextBox>(GetWidgetFromName(TEXT("IPBox")));
 	IP = Cast<UTextBlock>(GetWidgetFromName(TEXT("IP")));
@@ -32,6 +33,7 @@ void UUW_ReadyRoom::NativeConstruct()
 	BtPlay->OnClicked.AddDynamic(this, &UUW_ReadyRoom::PlayHandler);
 	BtDecide->OnClicked.AddDynamic(this, &UUW_ReadyRoom::DecideHandler);
 	BtJoin->OnClicked.AddDynamic(this, &UUW_ReadyRoom::JoinHandler);
+	BtBack->OnClicked.AddDynamic(this, &UUW_ReadyRoom::BackHandler);
 
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 
@@ -63,7 +65,7 @@ void UUW_ReadyRoom::PlayHandler()
 		int nServerPlayer = FCString::Atoi(*getStr);
 		MyGI->SetPlayerMesh("Player", MyGI->GetSkeletalMesh(MeshCB->GetSelectedOption()));
 		MyGI->SetPlayerAnim("Player", MyGI->GetAninInstance(MeshCB->GetSelectedOption()));
-		MyGI->SetServerPlayer("Player", nServerPlayer);
+		MyGI->SetMaxServerPlayer("Player", nServerPlayer);
 		MyPC->Play();
 	}
 }
@@ -74,6 +76,15 @@ void UUW_ReadyRoom::DecideHandler()
 	if (MyPC)
 	{
 		MyPC->Decide();
+	}
+}
+
+void UUW_ReadyRoom::BackHandler()
+{
+	AReadyRoom_PC* MyPC = Cast<AReadyRoom_PC>(GetOwningPlayer());
+	if (MyPC)
+	{
+		MyPC->Back();
 	}
 }
 

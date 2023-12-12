@@ -21,6 +21,8 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 		class UButton* BtDecide;
 	UPROPERTY(Meta = (BindWidget))
+		class UButton* BtBack;
+	UPROPERTY(Meta = (BindWidget))
 		class UEditableTextBox* PlayerOne;
 	UPROPERTY(Meta = (BindWidget))
 		class UEditableTextBox* IPBox;
@@ -61,6 +63,8 @@ public:
 		void DecideHandler();
 	UFUNCTION()
 		void JoinHandler();
+	UFUNCTION()
+		void BackHandler();
 
 	virtual void NativeConstruct() override;
 };

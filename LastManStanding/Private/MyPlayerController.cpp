@@ -18,8 +18,17 @@ void AMyPlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
 
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+
 	myCharacter = Cast<AMyCharacter>(GetPawn());
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Success!"));
+
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	HUD->SetDefaultPlayer(MyGI->GetMaxServerPlayer("Player"));
+	HUD->SetCurrentPlayer(OutActors.Num());
 }
 
 void AMyPlayerController::PostInitializeComponents()

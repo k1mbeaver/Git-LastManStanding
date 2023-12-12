@@ -24,6 +24,9 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 		class UTextBlock* TextDefaultPlayer;
 
+	UPROPERTY(Meta = (BindWidget))
+		class UTextBlock* TextSlash;
+
 protected:
 	virtual void NativeOnInitialized() override;
 
@@ -34,6 +37,8 @@ public:
 	void GameStart();
 
 	void InitServerUI(bool bServer);
+
+	void VisiblePlayer(bool bServer);
 
 	void SetDefaultPlayer(int nDefaultPlayer);
 

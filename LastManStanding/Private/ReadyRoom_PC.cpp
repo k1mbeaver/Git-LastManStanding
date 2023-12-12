@@ -102,3 +102,10 @@ void AReadyRoom_PC::Join()
 
 	UGameplayStatics::OpenLevel(GetWorld(), FName(GetServerIp));
 }
+
+void AReadyRoom_PC::Back()
+{
+	UABGameInstance* MyGI = GetGameInstance<UABGameInstance>();
+
+	UGameplayStatics::OpenLevel(GetWorld(), FName("Title"));
+}

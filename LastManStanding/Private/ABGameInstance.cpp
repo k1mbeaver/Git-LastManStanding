@@ -125,6 +125,12 @@ int UABGameInstance::GetMaxServerPlayer(FString Player)
 	return nServerPlayer;
 }
 
+void UABGameInstance::SetMaxServerPlayer(FString Player, int nServerPlayer)
+{
+	FPlayerData* PlayerData = FPlayerTable->FindRow<FPlayerData>(*Player, TEXT(""));
+	PlayerData->MaxServerPlayer = nServerPlayer;
+}
+
 void UABGameInstance::SetServerPlayer(FString Player, int nServerPlayer)
 {
 	FPlayerData* PlayerData = FPlayerTable->FindRow<FPlayerData>(*Player, TEXT(""));

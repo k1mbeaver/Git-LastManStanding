@@ -15,6 +15,7 @@ void UUW_GameReady::NativeOnInitialized()
 	BtStart = Cast<UButton>(GetWidgetFromName(TEXT("BtStart")));
 	TextCurrentPlayer = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextCurrentPlayer")));
 	TextDefaultPlayer = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextDefaultPlayer")));
+	TextSlash = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextSlash")));
 }
 
 void UUW_GameReady::NativeConstruct()
@@ -49,6 +50,7 @@ void UUW_GameReady::InitServerUI(bool bServer)
 	if (bServer)
 	{
 		BtStart->SetVisibility(ESlateVisibility::Visible);
+		VisiblePlayer(bServer);
 	}
 
 	// 클라이언트면 Start 버튼이 없음
@@ -56,6 +58,27 @@ void UUW_GameReady::InitServerUI(bool bServer)
 	else
 	{
 		BtStart->SetVisibility(ESlateVisibility::Hidden);
+		VisiblePlayer(bServer);
+	}
+}
+
+void UUW_GameReady::VisiblePlayer(bool bServer)
+{
+	// 서버면 Start 버튼이 있고
+	if (bServer)
+	{
+		TextCurrentPlayer->SetVisibility(ESlateVisibility::Visible);
+		TextDefaultPlayer->SetVisibility(ESlateVisibility::Visible);
+		TextSlash->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	// 클라이언트면 Start 버튼이 없음
+
+	else
+	{
+		TextCurrentPlayer->SetVisibility(ESlateVisibility::Hidden);
+		TextDefaultPlayer->SetVisibility(ESlateVisibility::Hidden);
+		TextSlash->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 

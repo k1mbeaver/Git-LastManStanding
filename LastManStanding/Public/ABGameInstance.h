@@ -25,6 +25,7 @@ public:
 	int GetServerPlayer(FString Player);
 	void SetServerPlayer(FString Player, int nServerPlayer);
 	int GetMaxServerPlayer(FString Player);
+	void SetMaxServerPlayer(FString Player, int nServerPlayer);
 	int GetIsServer(FString Player);
 	void SetIsServer(FString Player, int ServerAndClient);
 	void SetPlayerMesh(FString Player, USkeletalMesh* myMesh);

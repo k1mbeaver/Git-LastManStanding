@@ -33,5 +33,6 @@ public:
 	void Decide();
 	void Join();
 	void VisiblePlay();
+	void Back();
 	//void Join();
 };
