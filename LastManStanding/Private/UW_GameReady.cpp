@@ -49,8 +49,11 @@ void UUW_GameReady::InitServerUI(bool bServer)
 	// 서버면 Start 버튼이 있고
 	if (bServer)
 	{
+		UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 		BtStart->SetVisibility(ESlateVisibility::Visible);
 		VisiblePlayer(bServer);
+		SetDefaultPlayer(MyGI->GetServerPlayer("Player"));
+		SetCurrentPlayer(1);
 	}
 
 	// 클라이언트면 Start 버튼이 없음

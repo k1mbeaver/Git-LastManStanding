@@ -72,10 +72,10 @@ public:
 	void PlayerEnter();
 
 	UFUNCTION(Server, Unreliable)
-		void PlayerEnterToServer(AMyCharacter* PlayCharacter);
+		void PlayerEnterToServer();
 
 	UFUNCTION(Client, Unreliable)
-		void PlayerEnterToClient(AMyCharacter* PlayCharacter);
+		void PlayerEnterToClient(int nPlayer);
 
 	// RPC ÇÔ¼ö
 	void PlayerOut();

@@ -16,6 +16,7 @@ void UUW_ReadyRoom::NativeOnInitialized()
 
 	BtPlay = Cast<UButton>(GetWidgetFromName(TEXT("BtPlay")));
 	BtDecide = Cast<UButton>(GetWidgetFromName(TEXT("BtDecide")));
+	BtJoin = Cast<UButton>(GetWidgetFromName(TEXT("BtJoin")));
 	BtBack = Cast<UButton>(GetWidgetFromName(TEXT("BtBack")));
 	PlayerOne = Cast<UEditableTextBox>(GetWidgetFromName(TEXT("PlayerOne")));
 	IPBox = Cast<UEditableTextBox>(GetWidgetFromName(TEXT("IPBox")));
@@ -65,7 +66,7 @@ void UUW_ReadyRoom::PlayHandler()
 		int nServerPlayer = FCString::Atoi(*getStr);
 		MyGI->SetPlayerMesh("Player", MyGI->GetSkeletalMesh(MeshCB->GetSelectedOption()));
 		MyGI->SetPlayerAnim("Player", MyGI->GetAninInstance(MeshCB->GetSelectedOption()));
-		MyGI->SetMaxServerPlayer("Player", nServerPlayer);
+		MyGI->SetServerPlayer("Player", nServerPlayer);
 		MyPC->Play();
 	}
 }

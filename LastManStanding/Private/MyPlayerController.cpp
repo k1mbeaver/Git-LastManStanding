@@ -18,17 +18,8 @@ void AMyPlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
 
-	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
-	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
-
 	myCharacter = Cast<AMyCharacter>(GetPawn());
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Success!"));
-
-	TArray<AActor*> OutActors;
-	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
-
-	HUD->SetDefaultPlayer(MyGI->GetMaxServerPlayer("Player"));
-	HUD->SetCurrentPlayer(OutActors.Num());
 }
 
 void AMyPlayerController::PostInitializeComponents()
@@ -42,11 +33,18 @@ void AMyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+
 	SetShowMouseCursor(true);
 	SetInputMode(FInputModeUIOnly());
 
 	// 나중에 여러 좌표를 설정해서 소환하게끔 구현
 	StartLocation = FVector(1050.0f, -2920.0f, 142.0f);
+
+	if (MyGI->GetIsServer("Player") == 0)
+	{
+		PlayerEnter();
+	}
 }
 
 
@@ -182,13 +180,10 @@ void AMyPlayerController::StopJumping()
 
 void AMyPlayerController::PlayerEnter()
 {
-	if (myCharacter)
-	{	
-		PlayerEnterToServer(myCharacter);
-	}
+	PlayerEnterToServer();
 }
 
-void AMyPlayerController::PlayerEnterToServer_Implementation(AMyCharacter* PlayCharacter)
+void AMyPlayerController::PlayerEnterToServer_Implementation()
 {
 	TArray<AActor*> OutActors;
 	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
@@ -198,19 +193,22 @@ void AMyPlayerController::PlayerEnterToServer_Implementation(AMyCharacter* PlayC
 		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
 		if (PC)
 		{
-			PC->PlayerEnterToClient(PlayCharacter);
+			PC->PlayerEnterToClient(OutActors.Num());
 		}
 	}
 }
 
-void AMyPlayerController::PlayerEnterToClient_Implementation(AMyCharacter* PlayCharacter)
+void AMyPlayerController::PlayerEnterToClient_Implementation(int nPlayer)
 {
-	if (PlayCharacter == NULL) // 캐릭터에 빙의되지 않은 경우에는 실행하지 않게하자.
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+
+	if (MyGI->GetIsServer("Player") == 1)
 	{
-		return;
+		AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+		if (HUD == nullptr) return;
+
+		HUD->SetCurrentPlayer(nPlayer);
 	}
-
-
 }
 
 void AMyPlayerController::PlayerOut()
