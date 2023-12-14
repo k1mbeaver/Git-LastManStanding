@@ -96,3 +96,13 @@ void AGameMain_HUD::SetDefaultPlayer(int nDefaultPlayer)
 {
 	MainUIObject->SetDefaultPlayer(nDefaultPlayer);
 }
+
+void AGameMain_HUD::StartEnabled(bool bCanStart)
+{
+	MainUIObject->StartEnabled(bCanStart);
+}
+
+void AGameMain_HUD::SetReturnReady(bool bReturn)
+{
+	MainUIObject->SetReturnReady(bReturn);
+}

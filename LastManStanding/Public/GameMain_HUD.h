@@ -29,6 +29,8 @@ public:
 	void InitServerUI(bool bServer);
 	void SetCurrentPlayer(int nCurrentPlayer);
 	void SetDefaultPlayer(int nDefaultPlayer);
+	void StartEnabled(bool bCanStart);
+	void SetReturnReady(bool bReturn);
 
 private:
 	TSubclassOf<class UUW_GameMain> MainUIClass;

@@ -207,13 +207,29 @@ void AMyPlayerController::PlayerEnterToClient_Implementation(int nPlayer)
 		AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
 		if (HUD == nullptr) return;
 
-		HUD->SetCurrentPlayer(nPlayer);
+		if (MyGI->GetServerPlayer("Player") == nPlayer)
+		{
+			HUD->SetCurrentPlayer(nPlayer);
+			HUD->StartEnabled(true);
+		}
+
+		else if (MyGI->GetServerPlayer("Player") > nPlayer)
+		{
+			HUD->SetCurrentPlayer(nPlayer);
+			HUD->StartEnabled(false);
+		}
+
+		else if (MyGI->GetServerPlayer("Player") < nPlayer)
+		{
+			HUD->StartEnabled(false);
+		}
 	}
 }
 
 void AMyPlayerController::PlayerOut()
 {
 	PlayerOutToServer();
+	UGameplayStatics::OpenLevel(GetWorld(), FName("Title"));
 }
 
 void AMyPlayerController::PlayerOutToServer_Implementation()
@@ -226,14 +242,37 @@ void AMyPlayerController::PlayerOutToServer_Implementation()
 		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
 		if (PC)
 		{
-			PC->PlayerOutToClient();
+			PC->PlayerOutToClient(OutActors.Num() - 1);
 		}
 	}
 }
 
-void AMyPlayerController::PlayerOutToClient_Implementation()
+void AMyPlayerController::PlayerOutToClient_Implementation(int nPlayer)
 {
-	//
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+
+	if (MyGI->GetIsServer("Player") == 1)
+	{
+		AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+		if (HUD == nullptr) return;
+
+		if (MyGI->GetServerPlayer("Player") == nPlayer)
+		{
+			HUD->SetCurrentPlayer(nPlayer);
+			HUD->StartEnabled(true);
+		}
+
+		else if (MyGI->GetServerPlayer("Player") > nPlayer)
+		{
+			HUD->SetCurrentPlayer(nPlayer);
+			HUD->StartEnabled(false);
+		}
+
+		else if (MyGI->GetServerPlayer("Player") < nPlayer)
+		{
+			HUD->StartEnabled(false);
+		}
+	}
 }
 
 void AMyPlayerController::Run()

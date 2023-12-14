@@ -13,6 +13,7 @@ void UUW_GameReady::NativeOnInitialized()
 	Super::NativeOnInitialized();
 
 	BtStart = Cast<UButton>(GetWidgetFromName(TEXT("BtStart")));
+	BtBack = Cast<UButton>(GetWidgetFromName(TEXT("BtBack")));
 	TextCurrentPlayer = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextCurrentPlayer")));
 	TextDefaultPlayer = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextDefaultPlayer")));
 	TextSlash = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextSlash")));
@@ -21,6 +22,8 @@ void UUW_GameReady::NativeOnInitialized()
 void UUW_GameReady::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	BtBack->OnClicked.AddDynamic(this, &UUW_GameReady::BackHandler);
 
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 
@@ -97,4 +100,26 @@ void UUW_GameReady::SetCurrentPlayer(int nCurrentPlayer)
 	FString fsCurrentPlayer = FString::FromInt(nCurrentPlayer);
 	FText ftCurrentPlayer = FText::FromString(fsCurrentPlayer);
 	TextCurrentPlayer->SetText(ftCurrentPlayer);
+}
+
+void UUW_GameReady::StartEnabled(bool bCanStart)
+{
+	if (bCanStart)
+	{
+		BtStart->SetIsEnabled(true);
+	}
+
+	else
+	{
+		BtStart->SetIsEnabled(false);
+	}
+}
+
+void UUW_GameReady::BackHandler()
+{
+	AMyPlayerController* MyPC = Cast<AMyPlayerController>(GetOwningPlayer());
+	if (MyPC)
+	{
+		MyPC->PlayerOut();
+	}
 }

@@ -25,7 +25,8 @@ public:
 	void InitServerUI(bool bServer);
 	void SetCurrentPlayer(int nCurrentPlayer);
 	void SetDefaultPlayer(int nDefaultPlayer);
-
+	void StartEnabled(bool bCanStart);
+	void SetReturnReady(bool bReturn);
 private:
 	UPROPERTY(Meta = (BindWidget))
 		class UUW_Gameover* WB_GameOver;
@@ -41,4 +42,7 @@ private:
 
 	UPROPERTY(Meta = (BindWidget))
 		class UUW_GameReady* WB_GameReady;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UUW_ReturnReady* WB_ReturnReady;
 };

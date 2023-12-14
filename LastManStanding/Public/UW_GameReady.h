@@ -19,6 +19,9 @@ private:
 		class UButton* BtStart;
 
 	UPROPERTY(Meta = (BindWidget))
+		class UButton* BtBack;
+
+	UPROPERTY(Meta = (BindWidget))
 		class UTextBlock* TextCurrentPlayer;
 
 	UPROPERTY(Meta = (BindWidget))
@@ -43,4 +46,8 @@ public:
 	void SetDefaultPlayer(int nDefaultPlayer);
 
 	void SetCurrentPlayer(int nCurrentPlayer);
+
+	void StartEnabled(bool bCanStart);
+
+	void BackHandler();
 };

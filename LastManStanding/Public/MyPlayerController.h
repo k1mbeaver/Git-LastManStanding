@@ -84,7 +84,7 @@ public:
 		void PlayerOutToServer();
 
 	UFUNCTION(Client, Unreliable)
-		void PlayerOutToClient();
+		void PlayerOutToClient(int nPlayer);
 
 	void Run();
 

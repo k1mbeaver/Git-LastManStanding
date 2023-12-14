@@ -7,6 +7,7 @@
 #include "UW_Mission.h"
 #include "UW_Death.h"
 #include "UW_GameReady.h"
+#include "UW_ReturnReady.h"
 
 TSharedPtr<SWidget> UUW_GameMain::GetChatInputTextObject()
 {
@@ -56,4 +57,22 @@ void UUW_GameMain::SetCurrentPlayer(int nCurrentPlayer)
 void UUW_GameMain::SetDefaultPlayer(int nDefaultPlayer)
 {
 	WB_GameReady->SetDefaultPlayer(nDefaultPlayer);
+}
+
+void UUW_GameMain::StartEnabled(bool bCanStart)
+{
+	WB_GameReady->StartEnabled(bCanStart);
+}
+
+void UUW_GameMain::SetReturnReady(bool bReturn)
+{
+	if (bReturn)
+	{
+		WB_ReturnReady->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	else
+	{
+		WB_ReturnReady->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
