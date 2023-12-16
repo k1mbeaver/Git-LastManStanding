@@ -39,6 +39,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void GameStart();
 
+	UFUNCTION(BlueprintCallable)
+		void BackHandler();
+
 	void InitServerUI(bool bServer);
 
 	void VisiblePlayer(bool bServer);
@@ -48,6 +51,4 @@ public:
 	void SetCurrentPlayer(int nCurrentPlayer);
 
 	void StartEnabled(bool bCanStart);
-
-	void BackHandler();
 };

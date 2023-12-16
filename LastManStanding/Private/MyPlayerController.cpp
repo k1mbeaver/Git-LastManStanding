@@ -229,7 +229,6 @@ void AMyPlayerController::PlayerEnterToClient_Implementation(int nPlayer)
 void AMyPlayerController::PlayerOut()
 {
 	PlayerOutToServer();
-	UGameplayStatics::OpenLevel(GetWorld(), FName("Title"));
 }
 
 void AMyPlayerController::PlayerOutToServer_Implementation()

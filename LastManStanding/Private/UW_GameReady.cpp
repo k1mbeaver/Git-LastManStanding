@@ -7,6 +7,7 @@
 #include "Components/TextBlock.h"
 #include "MyPlayerController.h"
 #include "ABGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 void UUW_GameReady::NativeOnInitialized()
 {
@@ -22,8 +23,6 @@ void UUW_GameReady::NativeOnInitialized()
 void UUW_GameReady::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	BtBack->OnClicked.AddDynamic(this, &UUW_GameReady::BackHandler);
 
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 
@@ -122,4 +121,6 @@ void UUW_GameReady::BackHandler()
 	{
 		MyPC->PlayerOut();
 	}
+
+	UGameplayStatics::OpenLevel(GetWorld(), FName("Title"));
 }
