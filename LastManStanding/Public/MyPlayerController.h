@@ -42,6 +42,9 @@ public:
 		int nPlayerNumber = 0;
 
 	UPROPERTY(Replicated)
+		int nDefaultPlayer = 0;
+
+	UPROPERTY(Replicated)
 		int nMissionComplete = 0;
 
 	UPROPERTY(Replicated)
@@ -75,7 +78,7 @@ public:
 		void PlayerEnterToServer();
 
 	UFUNCTION(Client, Unreliable)
-		void PlayerEnterToClient(int nPlayer);
+		void PlayerEnterToClient(int nPlayer, int nDefault);
 
 	// RPC ÇÔ¼ö
 	void PlayerOut();

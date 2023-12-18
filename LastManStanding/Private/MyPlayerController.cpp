@@ -34,17 +34,18 @@ void AMyPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
 
 	SetShowMouseCursor(true);
 	SetInputMode(FInputModeUIOnly());
 
-	// 나중에 여러 좌표를 설정해서 소환하게끔 구현
-	StartLocation = FVector(1050.0f, -2920.0f, 142.0f);
-
-	if (MyGI->GetIsServer("Player") == 0)
+	if (MyGI->GetIsServer("Player") == 1)
 	{
-		PlayerEnter();
+		nDefaultPlayer = MyGI->GetServerPlayer("Player");
+		nPlayerNumber = 1;
 	}
+
+	PlayerEnter();
 }
 
 
@@ -193,35 +194,52 @@ void AMyPlayerController::PlayerEnterToServer_Implementation()
 		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
 		if (PC)
 		{
-			PC->PlayerEnterToClient(OutActors.Num());
+			PC->PlayerEnterToClient(OutActors.Num(), nDefaultPlayer);
 		}
 	}
 }
 
-void AMyPlayerController::PlayerEnterToClient_Implementation(int nPlayer)
+void AMyPlayerController::PlayerEnterToClient_Implementation(int nPlayer, int nDefault)
 {
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 
+	if (nPlayerNumber == 0)
+	{
+		nPlayerNumber = nPlayer;
+	}
+
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+
+	if (HUD == nullptr) return;
+
 	if (MyGI->GetIsServer("Player") == 1)
 	{
-		AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
-		if (HUD == nullptr) return;
-
-		if (MyGI->GetServerPlayer("Player") == nPlayer)
+		if (nPlayer > 1)
 		{
-			HUD->SetCurrentPlayer(nPlayer);
-			HUD->StartEnabled(true);
+			if (MyGI->GetServerPlayer("Player") == nPlayer)
+			{
+				HUD->SetCurrentPlayer(nPlayer);
+				HUD->StartEnabled(true);
+			}
+
+			else if (MyGI->GetServerPlayer("Player") > nPlayer)
+			{
+				HUD->SetCurrentPlayer(nPlayer);
+				HUD->StartEnabled(false);
+			}
+
+			else if (MyGI->GetServerPlayer("Player") < nPlayer)
+			{
+				HUD->StartEnabled(false);
+			}
 		}
+	}
 
-		else if (MyGI->GetServerPlayer("Player") > nPlayer)
+	else if (MyGI->GetIsServer("Player") == 0)
+	{
+		if (nPlayerNumber > nDefault)
 		{
-			HUD->SetCurrentPlayer(nPlayer);
-			HUD->StartEnabled(false);
-		}
-
-		else if (MyGI->GetServerPlayer("Player") < nPlayer)
-		{
-			HUD->StartEnabled(false);
+			HUD->SetReturnReady(true);
 		}
 	}
 }
@@ -720,4 +738,5 @@ void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AMyPlayerController, bStart);
 	DOREPLIFETIME(AMyPlayerController, nMissionComplete);
 	DOREPLIFETIME(AMyPlayerController, bWinner);
+	DOREPLIFETIME(AMyPlayerController, nDefaultPlayer);
 }
