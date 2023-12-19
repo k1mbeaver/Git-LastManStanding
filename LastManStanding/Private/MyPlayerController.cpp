@@ -20,6 +20,11 @@ void AMyPlayerController::OnPossess(APawn* aPawn)
 
 	myCharacter = Cast<AMyCharacter>(GetPawn());
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Success!"));
+
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+	nDefaultPlayer = MyGI->GetServerPlayer("Player");
+
+	PlayerEnter(nDefaultPlayer);
 }
 
 void AMyPlayerController::PostInitializeComponents()
@@ -44,8 +49,6 @@ void AMyPlayerController::BeginPlay()
 		nDefaultPlayer = MyGI->GetServerPlayer("Player");
 		nPlayerNumber = 1;
 	}
-
-	PlayerEnter();
 }
 
 
@@ -179,12 +182,12 @@ void AMyPlayerController::StopJumping()
 	}
 }
 
-void AMyPlayerController::PlayerEnter()
+void AMyPlayerController::PlayerEnter(int nDefault)
 {
-	PlayerEnterToServer();
+	PlayerEnterToServer(nDefault);
 }
 
-void AMyPlayerController::PlayerEnterToServer_Implementation()
+void AMyPlayerController::PlayerEnterToServer_Implementation(int nDefault)
 {
 	TArray<AActor*> OutActors;
 	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
@@ -194,7 +197,7 @@ void AMyPlayerController::PlayerEnterToServer_Implementation()
 		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
 		if (PC)
 		{
-			PC->PlayerEnterToClient(OutActors.Num(), nDefaultPlayer);
+			PC->PlayerEnterToClient(OutActors.Num(), nDefault);
 		}
 	}
 }
@@ -210,10 +213,10 @@ void AMyPlayerController::PlayerEnterToClient_Implementation(int nPlayer, int nD
 
 	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
 
-	if (HUD == nullptr) return;
-
 	if (MyGI->GetIsServer("Player") == 1)
 	{
+		if (HUD == nullptr) return;
+
 		if (nPlayer > 1)
 		{
 			if (MyGI->GetServerPlayer("Player") == nPlayer)
@@ -237,6 +240,8 @@ void AMyPlayerController::PlayerEnterToClient_Implementation(int nPlayer, int nD
 
 	else if (MyGI->GetIsServer("Player") == 0)
 	{
+		if (HUD == nullptr) return;
+
 		if (nPlayerNumber > nDefault)
 		{
 			HUD->SetReturnReady(true);

@@ -72,10 +72,10 @@ private:
 
 public:
 	// RPC ÇÔ¼ö
-	void PlayerEnter();
+	void PlayerEnter(int nDefault);
 
 	UFUNCTION(Server, Unreliable)
-		void PlayerEnterToServer();
+		void PlayerEnterToServer(int nDefault);
 
 	UFUNCTION(Client, Unreliable)
 		void PlayerEnterToClient(int nPlayer, int nDefault);
