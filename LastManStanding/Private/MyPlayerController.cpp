@@ -18,13 +18,10 @@ void AMyPlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
 
-	myCharacter = Cast<AMyCharacter>(GetPawn());
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Success!"));
-
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
-	nDefaultPlayer = MyGI->GetServerPlayer("Player");
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerEnter!"));
 
-	PlayerEnter(nDefaultPlayer);
+	PlayerEnter(MyGI->GetServerPlayer("Player"));
 }
 
 void AMyPlayerController::PostInitializeComponents()
@@ -209,6 +206,7 @@ void AMyPlayerController::PlayerEnterToClient_Implementation(int nPlayer, int nD
 	if (nPlayerNumber == 0)
 	{
 		nPlayerNumber = nPlayer;
+		nDefaultPlayer = nDefault;
 	}
 
 	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
@@ -223,6 +221,7 @@ void AMyPlayerController::PlayerEnterToClient_Implementation(int nPlayer, int nD
 			{
 				HUD->SetCurrentPlayer(nPlayer);
 				HUD->StartEnabled(true);
+				BanPlayer(false);
 			}
 
 			else if (MyGI->GetServerPlayer("Player") > nPlayer)
@@ -233,19 +232,44 @@ void AMyPlayerController::PlayerEnterToClient_Implementation(int nPlayer, int nD
 
 			else if (MyGI->GetServerPlayer("Player") < nPlayer)
 			{
+				HUD->SetCurrentPlayer(nPlayer);
 				HUD->StartEnabled(false);
+				BanPlayer(true);
 			}
 		}
 	}
+}
 
-	else if (MyGI->GetIsServer("Player") == 0)
+void AMyPlayerController::BanPlayer(bool bBan)
+{
+	BanPlayerToServer(bBan);
+}
+
+void AMyPlayerController::BanPlayerToServer_Implementation(bool bBan)
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	for (AActor* OutActor : OutActors)
 	{
-		if (HUD == nullptr) return;
-
-		if (nPlayerNumber > nDefault)
+		AMyPlayerController* PC = Cast<AMyPlayerController>(OutActor);
+		if (PC)
 		{
-			HUD->SetReturnReady(true);
+			PC->BanPlayerToClient(bBan);
 		}
+	}
+}
+
+void AMyPlayerController::BanPlayerToClient_Implementation(bool bBan)
+{
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
+
+	if (HUD == nullptr) return;
+
+	if (MyGI->GetIsServer("Player") == 0)
+	{
+		HUD->SetReturnReady(bBan);
 	}
 }
 

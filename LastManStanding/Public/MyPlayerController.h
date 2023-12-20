@@ -81,6 +81,14 @@ public:
 		void PlayerEnterToClient(int nPlayer, int nDefault);
 
 	// RPC ÇÔ¼ö
+	void BanPlayer(bool bBan);
+
+	UFUNCTION(Server, Unreliable)
+		void BanPlayerToServer(bool bBan);
+
+	UFUNCTION(Client, Unreliable)
+		void BanPlayerToClient(bool bBan);
+
 	void PlayerOut();
 
 	UFUNCTION(Server, Unreliable)
