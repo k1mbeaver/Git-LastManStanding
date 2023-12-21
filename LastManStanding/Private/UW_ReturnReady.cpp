@@ -27,4 +27,6 @@ void UUW_ReturnReady::BackHandler()
 	{
 		MyPC->PlayerOut();
 	}
+
+	UGameplayStatics::OpenLevel(GetWorld(), FName("Title"));
 }
