@@ -8,6 +8,7 @@
 #include "MeshDataTableClass.h"
 #include "AnimationDataTableClass.h"
 #include "LocaitonDataTableClass.h"
+#include "ServerDataTableClass.h"
 
 UABGameInstance::UABGameInstance()
 {
@@ -52,6 +53,13 @@ UABGameInstance::UABGameInstance()
 	if (DT_LOCATION.Succeeded())
 	{
 		FLocationTable = DT_LOCATION.Object;
+	}
+
+	FString ServerDataPath = TEXT("DataTable'/Game/DataTable/ServerDataTable.ServerDataTable'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SERVER(*ServerDataPath);
+	if (DT_SERVER.Succeeded())
+	{
+		FServerTable = DT_SERVER.Object;
 	}
 }
 
@@ -159,18 +167,10 @@ TSubclassOf<class UAnimInstance> UABGameInstance::GetAninInstance(FString MeshNa
 }
 
 
-FString UABGameInstance::GetMapName(FString MapName)
+TArray<FName> UABGameInstance::GetMapArray()
 {
-	FMapDataTable* MapData = FMapTable->FindRow<FMapDataTable>(*MapName, TEXT(""));
-	FString myMapName = MapData->MapName;
-	return myMapName;
-}
-
-int UABGameInstance::GetMonsterSize(FString MapName)
-{
-	FMapDataTable* MapData = FMapTable->FindRow<FMapDataTable>(*MapName, TEXT(""));
-	int MonsterSize = MapData->AISize;
-	return MonsterSize;
+	TArray<FName> myMapData = FMapTable->GetRowNames();
+	return myMapData;
 }
 
 UAnimMontage* UABGameInstance::GetMontage(FString AnimationName)
@@ -192,4 +192,30 @@ FVector UABGameInstance::GetLocation(int myNumber)
 	FLocationDataTable* LocationData = FLocationTable->FindRow<FLocationDataTable>(*strNumber, TEXT(""));
 	FVector myLocation = LocationData->SpawnLocation;
 	return myLocation;
+}
+
+void UABGameInstance::SetServerMap(FString myDefault, FString MapName)
+{
+	FServerDataTable* ServerData = FServerTable->FindRow<FServerDataTable>(*myDefault, TEXT(""));
+	ServerData->ServerMapName = MapName;
+}
+
+FString UABGameInstance::GetServerMap(FString myDefault)
+{
+	FServerDataTable* ServerData = FServerTable->FindRow<FServerDataTable>(*myDefault, TEXT(""));
+	FString ServerMapName = ServerData->ServerMapName;
+	return ServerMapName;
+}
+
+void UABGameInstance::SetServerAISize(FString myDefault, int nSize)
+{
+	FServerDataTable* ServerData = FServerTable->FindRow<FServerDataTable>(*myDefault, TEXT(""));
+	ServerData->ServerAISize = nSize;
+}
+
+int UABGameInstance::GetServerAISize(FString myDefault)
+{
+	FServerDataTable* ServerData = FServerTable->FindRow<FServerDataTable>(*myDefault, TEXT(""));
+	int nAISize = ServerData->ServerAISize;
+	return nAISize;
 }

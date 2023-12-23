@@ -24,6 +24,10 @@ void UUW_ReadyRoom::NativeOnInitialized()
 	MeshCB = Cast<UComboBoxString>(GetWidgetFromName(TEXT("MeshCB")));
 	TextPlayer = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextPlayer")));
 	PlayerCB = Cast<UComboBoxString>(GetWidgetFromName(TEXT("PlayerCB")));
+	TextAI = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextAI")));
+	TextMap = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextMap")));
+	MapCB = Cast<UComboBoxString>(GetWidgetFromName(TEXT("MapCB")));
+	AITextBox = Cast<UEditableTextBox>(GetWidgetFromName(TEXT("AITextBox")));
 }
 
 
@@ -38,6 +42,27 @@ void UUW_ReadyRoom::NativeConstruct()
 
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 
+	SetMapCB(MyGI);
+	SetMeshCB(MyGI);
+	SetPlayerCB(MyGI);
+}
+
+void UUW_ReadyRoom::SetMapCB(UABGameInstance* MyGI)
+{
+	TArray<FName> RowNames;
+	RowNames = MyGI->GetMapArray(); // Get the row names from the data table
+
+	for (const FName& RowName : RowNames)
+	{
+		// Add each row name to the combo box
+		MapCB->AddOption(RowName.ToString());
+	}
+
+	MapCB->SetSelectedIndex(0);
+}
+
+void UUW_ReadyRoom::SetMeshCB(UABGameInstance* MyGI)
+{
 	TArray<FName> RowNames;
 	RowNames = MyGI->GetMeshArray(); // Get the row names from the data table
 
@@ -47,13 +72,19 @@ void UUW_ReadyRoom::NativeConstruct()
 		MeshCB->AddOption(RowName.ToString());
 	}
 
+	MeshCB->SetSelectedIndex(0);
+}
+
+
+void UUW_ReadyRoom::SetPlayerCB(UABGameInstance* MyGI)
+{
 	for (int i = 2; i <= MyGI->GetMaxServerPlayer("Player"); i++)
 	{
 		FString strNumber = FString::FromInt(i);
 		PlayerCB->AddOption(strNumber);
 	}
 
-	MeshCB->SetSelectedOption("Man1");
+	PlayerCB->SetSelectedIndex(0);
 }
 
 void UUW_ReadyRoom::PlayHandler()
@@ -62,11 +93,16 @@ void UUW_ReadyRoom::PlayHandler()
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 	if (MyPC)
 	{
-		FString getStr = PlayerCB->GetSelectedOption();
-		int nServerPlayer = FCString::Atoi(*getStr);
+		FString getPlayerNumber = PlayerCB->GetSelectedOption();
+		FString getMapName = MapCB->GetSelectedOption();
+		FString strMonsterSize = AITextBox->GetText().ToString();
+		int nMonsterSize = FCString::Atoi(*strMonsterSize);
+		int nServerPlayer = FCString::Atoi(*getPlayerNumber);
 		MyGI->SetPlayerMesh("Player", MyGI->GetSkeletalMesh(MeshCB->GetSelectedOption()));
 		MyGI->SetPlayerAnim("Player", MyGI->GetAninInstance(MeshCB->GetSelectedOption()));
 		MyGI->SetServerPlayer("Player", nServerPlayer);
+		MyGI->SetServerAISize("Default", nMonsterSize);
+		MyGI->SetServerMap("Default", getMapName);
 		MyPC->Play();
 	}
 }
@@ -121,6 +157,10 @@ void UUW_ReadyRoom::HiddenServerPlayer()
 {
 	TextPlayer->SetVisibility(ESlateVisibility::Hidden);
 	PlayerCB->SetVisibility(ESlateVisibility::Hidden);
+	TextAI->SetVisibility(ESlateVisibility::Hidden);
+	AITextBox->SetVisibility(ESlateVisibility::Hidden);
+	MapCB->SetVisibility(ESlateVisibility::Hidden);
+	TextMap->SetVisibility(ESlateVisibility::Hidden);
 }
 
 FString UUW_ReadyRoom::GetTextBox()

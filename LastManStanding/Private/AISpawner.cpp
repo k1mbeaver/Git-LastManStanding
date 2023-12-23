@@ -29,7 +29,7 @@ void AAISpawner::Tick(float DeltaTime)
 int AAISpawner::GetMonsterSize()
 {
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
-	nSizeMonster = MyGI->GetMonsterSize("Default");
+	nSizeMonster = MyGI->GetServerAISize("Default");
 
 	return nSizeMonster;
 }

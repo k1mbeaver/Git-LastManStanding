@@ -35,11 +35,14 @@ public:
 	USoundWave* GetSound(FString SoundName);
 	USkeletalMesh* GetSkeletalMesh(FString MeshName);
 	TSubclassOf<class UAnimInstance> GetAninInstance(FString MeshName);
-	FString GetMapName(FString MapName);
-	int GetMonsterSize(FString MapName);
+	TArray<FName> GetMapArray();
 	UAnimMontage* GetMontage(FString MontageName);
 	TArray<FName> GetMeshArray();
 	FVector GetLocation(int myNumber);
+	void SetServerMap(FString myDefault, FString MapName);
+	FString GetServerMap(FString myDefault);
+	void SetServerAISize(FString myDefault, int nSize);
+	int GetServerAISize(FString myDefault);
 
 private:
 	UPROPERTY()
@@ -59,4 +62,7 @@ private:
 
 	UPROPERTY()
 		UDataTable* FLocationTable;
+
+	UPROPERTY()
+		UDataTable* FServerTable;
 };

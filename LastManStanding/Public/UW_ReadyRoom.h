@@ -27,6 +27,10 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 		class UEditableTextBox* IPBox;
 	UPROPERTY(Meta = (BindWidget))
+		class UEditableTextBox* AITextBox;
+	UPROPERTY(Meta = (BindWidget))
+		class UTextBlock* TextAI;
+	UPROPERTY(Meta = (BindWidget))
 		class UTextBlock* IP;
 	UPROPERTY(Meta = (BindWidget))
 		class UComboBoxString* MeshCB;
@@ -34,6 +38,10 @@ private:
 		class UTextBlock* TextPlayer;
 	UPROPERTY(Meta = (BindWidget))
 		class UComboBoxString* PlayerCB;
+	UPROPERTY(Meta = (BindWidget))
+		class UComboBoxString* MapCB;
+	UPROPERTY(Meta = (BindWidget))
+		class UTextBlock* TextMap;
 
 public:
 
@@ -52,6 +60,12 @@ public:
 	void HiddenIPBox();
 
 	void HiddenServerPlayer();
+
+	void SetMapCB(UABGameInstance* MyGI);
+
+	void SetMeshCB(UABGameInstance* MyGI);
+
+	void SetPlayerCB(UABGameInstance* MyGI);
 
 	FString GetTextBox();
 

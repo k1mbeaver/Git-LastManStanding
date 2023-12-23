@@ -49,8 +49,12 @@ void AReadyRoom_PC::VisiblePlay()
 
 void AReadyRoom_PC::Play()
 {
+	UABGameInstance* MyGI = GetGameInstance<UABGameInstance>();
+
+	FString MapName = MyGI->GetServerMap("Default");
+	FName myMapName = FName(*MapName);
 	//CtoS_Play(); // 여기서 각 클라이언트 들의 닉네임을 저장한다.
-	UGameplayStatics::OpenLevel(GetWorld(), FName("Demonstration"), true, ((FString)("Listen")));
+	UGameplayStatics::OpenLevel(GetWorld(), myMapName, true, ((FString)("Listen")));
 	//UGameplayStatics::OpenLevel(GetWorld(), FName("ThirdPersonExampleMap"));
 }
 
