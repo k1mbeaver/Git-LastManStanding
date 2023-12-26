@@ -15,7 +15,7 @@ class LASTMANSTANDING_API UUW_ReadyRoomMain : public UUserWidget
 	GENERATED_BODY()
 
 	UPROPERTY(Meta = (BindWidget))
-		class UUW_ReadyRoom* WB_ReadyRoom; // 이게 널값이었다?
+		class UUW_ReadyRoom* WB_ReadyRoom;
 
 public:
 	void VisiblePlayButton();

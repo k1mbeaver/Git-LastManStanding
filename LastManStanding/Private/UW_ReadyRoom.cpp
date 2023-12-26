@@ -25,8 +25,6 @@ void UUW_ReadyRoom::NativeOnInitialized()
 	TextPlayer = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextPlayer")));
 	PlayerCB = Cast<UComboBoxString>(GetWidgetFromName(TEXT("PlayerCB")));
 	TextAI = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextAI")));
-	TextMap = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextMap")));
-	MapCB = Cast<UComboBoxString>(GetWidgetFromName(TEXT("MapCB")));
 	AITextBox = Cast<UEditableTextBox>(GetWidgetFromName(TEXT("AITextBox")));
 }
 
@@ -42,23 +40,8 @@ void UUW_ReadyRoom::NativeConstruct()
 
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 
-	SetMapCB(MyGI);
 	SetMeshCB(MyGI);
 	SetPlayerCB(MyGI);
-}
-
-void UUW_ReadyRoom::SetMapCB(UABGameInstance* MyGI)
-{
-	TArray<FName> RowNames;
-	RowNames = MyGI->GetMapArray(); // Get the row names from the data table
-
-	for (const FName& RowName : RowNames)
-	{
-		// Add each row name to the combo box
-		MapCB->AddOption(RowName.ToString());
-	}
-
-	MapCB->SetSelectedIndex(0);
 }
 
 void UUW_ReadyRoom::SetMeshCB(UABGameInstance* MyGI)
@@ -94,7 +77,6 @@ void UUW_ReadyRoom::PlayHandler()
 	if (MyPC)
 	{
 		FString getPlayerNumber = PlayerCB->GetSelectedOption();
-		FString getMapName = MapCB->GetSelectedOption();
 		FString strMonsterSize = AITextBox->GetText().ToString();
 		int nMonsterSize = FCString::Atoi(*strMonsterSize);
 		int nServerPlayer = FCString::Atoi(*getPlayerNumber);
@@ -102,7 +84,6 @@ void UUW_ReadyRoom::PlayHandler()
 		MyGI->SetPlayerAnim("Player", MyGI->GetAninInstance(MeshCB->GetSelectedOption()));
 		MyGI->SetServerPlayer("Player", nServerPlayer);
 		MyGI->SetServerAISize("Default", nMonsterSize);
-		MyGI->SetServerMap("Default", getMapName);
 		MyPC->Play();
 	}
 }
@@ -159,8 +140,6 @@ void UUW_ReadyRoom::HiddenServerPlayer()
 	PlayerCB->SetVisibility(ESlateVisibility::Hidden);
 	TextAI->SetVisibility(ESlateVisibility::Hidden);
 	AITextBox->SetVisibility(ESlateVisibility::Hidden);
-	MapCB->SetVisibility(ESlateVisibility::Hidden);
-	TextMap->SetVisibility(ESlateVisibility::Hidden);
 }
 
 FString UUW_ReadyRoom::GetTextBox()

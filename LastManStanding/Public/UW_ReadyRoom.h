@@ -38,10 +38,6 @@ private:
 		class UTextBlock* TextPlayer;
 	UPROPERTY(Meta = (BindWidget))
 		class UComboBoxString* PlayerCB;
-	UPROPERTY(Meta = (BindWidget))
-		class UComboBoxString* MapCB;
-	UPROPERTY(Meta = (BindWidget))
-		class UTextBlock* TextMap;
 
 public:
 
@@ -60,8 +56,6 @@ public:
 	void HiddenIPBox();
 
 	void HiddenServerPlayer();
-
-	void SetMapCB(UABGameInstance* MyGI);
 
 	void SetMeshCB(UABGameInstance* MyGI);
 
