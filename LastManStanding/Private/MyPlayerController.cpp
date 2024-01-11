@@ -21,6 +21,7 @@ void AMyPlayerController::OnPossess(APawn* aPawn)
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerEnter!"));
 
+	myCharacter = Cast<AMyCharacter>(aPawn);
 	PlayerEnter(MyGI->GetServerPlayer("Player"));
 }
 
