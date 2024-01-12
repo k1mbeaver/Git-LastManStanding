@@ -8,6 +8,7 @@
 #include "ABGameInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameMain_HUD.h"
+#include "MyCamera.h"
 
 AMyPlayerController::AMyPlayerController()
 {
@@ -46,6 +47,17 @@ void AMyPlayerController::BeginPlay()
 	{
 		nDefaultPlayer = MyGI->GetServerPlayer("Player");
 		nPlayerNumber = 1;
+	}
+
+	UWorld* world = GetWorld();
+
+	if (world)
+	{
+		FString CameraTag = "CCTV";
+
+		UGameplayStatics::GetAllActorsWithTag(world, FName(*CameraTag), CameraFoundActors);
+		nCurrentCamera = 0;
+		nDefaultCamera = CameraFoundActors.Num();
 	}
 }
 
@@ -99,6 +111,9 @@ void AMyPlayerController::SetupInputComponent()
 	// 캐릭터 댄스
 	InputComponent->BindAction(TEXT("Dance"), IE_Pressed, this, &AMyPlayerController::Dancing);
 	InputComponent->BindAction(TEXT("Dance"), IE_Released, this, &AMyPlayerController::StopDancing);
+
+	// 카메라 전환
+	InputComponent->BindAction(TEXT("CameraChange"), IE_Pressed, this, &AMyPlayerController::CameraChange);
 
 }
 
@@ -561,6 +576,18 @@ void AMyPlayerController::DeadToClient_Implementation(AMyCharacter* PlayCharacte
 		return;
 	}
 
+	else if (PlayCharacter == myCharacter)
+	{
+		AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+		if (HUD == nullptr) return;
+
+		HUD->VisibleDeath(true);
+		SetShowMouseCursor(true);
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Dead!"));
+
+		bDeath = true;
+	}
+
 	PlayCharacter->CharacterAnim->SetDeadAnim();
 
 	DeathCount++;
@@ -598,9 +625,11 @@ void AMyPlayerController::GameoverToClient_Implementation(const FString& WinnerN
 	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
 	if (HUD == nullptr) return;
 
+	HUD->VisibleDeath(false);
 	HUD->SetWinnerName(WinnerName);
 	HUD->VisibleGameover();
 	SetShowMouseCursor(true);
+	SetInputMode(FInputModeUIOnly());
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Gameover!"));
 }
 
@@ -612,13 +641,6 @@ void AMyPlayerController::PlayerDeath()
 	}
 
 	DeadToServer(myCharacter);
-
-	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
-	if (HUD == nullptr) return;
-
-	HUD->VisibleDeath();
-	SetShowMouseCursor(true);
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Dead!"));
 }
 
 void AMyPlayerController::SendMessage(const FText& Text)
@@ -754,6 +776,40 @@ void AMyPlayerController::StartCharacterToClient_Implementation(AMyCharacter* Pl
 	PlayCharacter->SetActorLocation(CharacterLocation);
 	PlayCharacter->mySkeletalMesh->SetSkeletalMesh(CharacterMesh);
 	PlayCharacter->PlayerName = PlayerName;
+}
+
+void AMyPlayerController::CameraChange()
+{
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+	if (HUD == nullptr) return;
+
+	HUD->VisibleDeath(false);
+	SetShowMouseCursor(false);
+	SetInputMode(FInputModeGameOnly());
+
+	if (bDeath)
+	{
+		if (CameraFoundActors.Num() > 0)
+		{
+			AActor* CameraActor = CameraFoundActors[nCurrentCamera];
+
+			if (AMyCamera* CastedCamera = Cast<AMyCamera>(CameraActor))
+			{
+				CastedCamera->PlayerCameraChange();
+			}
+		}
+
+		// 만약에 마지막 번호의 카메라 이면
+		if (nCurrentCamera == nDefaultCamera - 1)
+		{
+			nCurrentCamera = 0;
+		}
+
+		else
+		{
+			nCurrentCamera++;
+		}
+	}
 }
 
 void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

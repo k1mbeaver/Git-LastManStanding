@@ -34,9 +34,17 @@ void UUW_GameMain::VisibleGameover()
 	WB_GameOver->SetVisibility(ESlateVisibility::Visible);
 }
 
-void UUW_GameMain::VisibleDeath()
+void UUW_GameMain::VisibleDeath(bool bVisible)
 {
-	WB_Death->SetVisibility(ESlateVisibility::Visible);
+	if (bVisible)
+	{
+		WB_Death->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	else
+	{
+		WB_Death->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
 void UUW_GameMain::HiddenGameReady()

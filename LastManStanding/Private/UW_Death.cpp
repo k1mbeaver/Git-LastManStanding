@@ -3,7 +3,7 @@
 
 #include "UW_Death.h"
 #include "Components/Button.h"
-#include "ABPlayerController.h"
+#include "MyPlayerController.h"
 
 void UUW_Death::NativeOnInitialized()
 {
@@ -12,3 +12,9 @@ void UUW_Death::NativeOnInitialized()
 	BtWatch = Cast<UButton>(GetWidgetFromName(TEXT("BtWatch")));
 }
 
+void UUW_Death::WatchCamera()
+{
+	AMyPlayerController* PlayerController = Cast<AMyPlayerController>(GetWorld()->GetFirstPlayerController());
+
+	PlayerController->CameraChange();
+}

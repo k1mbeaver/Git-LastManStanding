@@ -78,11 +78,11 @@ void AGameMain_HUD::VisibleGameover()
 	MainUIObject->VisibleGameover();
 }
 
-void AGameMain_HUD::VisibleDeath()
+void AGameMain_HUD::VisibleDeath(bool bVisible)
 {
 	if (!CheckUIObject()) return;
 
-	MainUIObject->VisibleDeath();
+	MainUIObject->VisibleDeath(bVisible);
 }
 
 void AGameMain_HUD::HiddenGameReady()

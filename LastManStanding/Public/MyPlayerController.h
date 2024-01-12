@@ -30,7 +30,10 @@ private:
 		class AMyCharacter* myCharacter;
 
 	bool bChat = false;
-
+	bool bDeath = false;
+	int nCurrentCamera = 0;
+	int nDefaultCamera = 0;
+	TArray<AActor*> CameraFoundActors;
 public:
 	UPROPERTY(Replicated)
 		int DeathCount = 1;
@@ -188,4 +191,5 @@ public:
 	void PlayerDeath();
 	void EnterGameReady(bool bServer);
 	void DanceComplete();
+	void CameraChange();
 };

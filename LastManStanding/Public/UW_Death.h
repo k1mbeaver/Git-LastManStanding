@@ -21,5 +21,6 @@ protected:
 	virtual void NativeOnInitialized() override;
 
 public:
-	
+	UFUNCTION(BlueprintCallable)
+		void WatchCamera();
 };

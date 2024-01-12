@@ -20,7 +20,7 @@ public:
 	void SetPlayerMissionClear(int nMissionClear);
 	void SetWinnerName(const FString& WinnerName);
 	void VisibleGameover();
-	void VisibleDeath();
+	void VisibleDeath(bool bVisible);
 	void HiddenGameReady();
 	void InitServerUI(bool bServer);
 	void SetCurrentPlayer(int nCurrentPlayer);
