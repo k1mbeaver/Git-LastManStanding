@@ -20,7 +20,7 @@ void AMyPlayerController::OnPossess(APawn* aPawn)
 	Super::OnPossess(aPawn);
 
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerEnter!"));
+	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerEnter!"));
 
 	myCharacter = Cast<AMyCharacter>(aPawn);
 	PlayerEnter(MyGI->GetServerPlayer("Player"));
@@ -30,7 +30,7 @@ void AMyPlayerController::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Possess!"));
+	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Possess!"));
 }
 
 void AMyPlayerController::BeginPlay()
@@ -42,6 +42,8 @@ void AMyPlayerController::BeginPlay()
 
 	SetShowMouseCursor(true);
 	SetInputMode(FInputModeUIOnly());
+
+	ConsoleCommand("DisableAllScreenMessages", true);
 
 	if (MyGI->GetIsServer("Player") == 1)
 	{
@@ -583,7 +585,7 @@ void AMyPlayerController::DeadToClient_Implementation(AMyCharacter* PlayCharacte
 
 		HUD->VisibleDeath(true);
 		SetShowMouseCursor(true);
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Dead!"));
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Dead!"));
 
 		bDeath = true;
 	}
@@ -630,7 +632,7 @@ void AMyPlayerController::GameoverToClient_Implementation(const FString& WinnerN
 	HUD->VisibleGameover();
 	SetShowMouseCursor(true);
 	SetInputMode(FInputModeUIOnly());
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Gameover!"));
+	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Gameover!"));
 }
 
 void AMyPlayerController::PlayerDeath()

@@ -274,7 +274,7 @@ void AMyCharacter::AttackCheck()
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params);
 
-
+/*
 #if ENABLE_DRAW_DEBUG
 	FVector TraceVec = GetActorForwardVector() * AttackRange;
 	FVector Center = GetActorLocation() + TraceVec * 0.5f;
@@ -294,10 +294,10 @@ void AMyCharacter::AttackCheck()
 		false,
 		DebugLifeTime);
 
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerPunch!")); // 플레이어가 펀치하는지 확인용
+	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerPunch!")); // 플레이어가 펀치하는지 확인용
 
 #endif
-
+*/
 	if (bResult)
 	{
 		if (HitResult.Actor.IsValid())
