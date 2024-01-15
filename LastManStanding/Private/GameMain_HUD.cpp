@@ -126,3 +126,10 @@ void AGameMain_HUD::SetReturnReady(bool bReturn)
 
 	MainUIObject->SetReturnReady(bReturn);
 }
+
+void AGameMain_HUD::SetWatchMode()
+{
+	if (!CheckUIObject()) return;
+
+	MainUIObject->SetWatchMode();
+}

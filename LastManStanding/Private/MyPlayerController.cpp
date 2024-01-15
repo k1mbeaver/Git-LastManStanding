@@ -786,8 +786,9 @@ void AMyPlayerController::CameraChange()
 	if (HUD == nullptr) return;
 
 	HUD->VisibleDeath(false);
-	SetShowMouseCursor(false);
-	SetInputMode(FInputModeGameOnly());
+	HUD->SetWatchMode();
+	SetShowMouseCursor(true);
+	SetInputMode(FInputModeGameAndUI());
 
 	if (bDeath)
 	{

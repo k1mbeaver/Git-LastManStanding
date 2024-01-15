@@ -8,6 +8,7 @@
 #include "UW_Death.h"
 #include "UW_GameReady.h"
 #include "UW_ReturnReady.h"
+#include "UW_WatchMode.h"
 
 TSharedPtr<SWidget> UUW_GameMain::GetChatInputTextObject()
 {
@@ -83,4 +84,11 @@ void UUW_GameMain::SetReturnReady(bool bReturn)
 	{
 		WB_ReturnReady->SetVisibility(ESlateVisibility::Hidden);
 	}
+}
+
+void UUW_GameMain::SetWatchMode()
+{
+	WB_Chat->SetVisibility(ESlateVisibility::Hidden);
+	WB_UserMission->SetVisibility(ESlateVisibility::Hidden);
+	WB_WatchMode->SetVisibility(ESlateVisibility::Visible);
 }

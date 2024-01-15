@@ -31,7 +31,7 @@ public:
 	void SetDefaultPlayer(int nDefaultPlayer);
 	void StartEnabled(bool bCanStart);
 	void SetReturnReady(bool bReturn);
-
+	void SetWatchMode();
 private:
 	TSubclassOf<class UUW_GameMain> MainUIClass;
 	class UUW_GameMain* MainUIObject;

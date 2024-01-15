@@ -27,6 +27,8 @@ public:
 	void SetDefaultPlayer(int nDefaultPlayer);
 	void StartEnabled(bool bCanStart);
 	void SetReturnReady(bool bReturn);
+	void SetWatchMode();
+
 private:
 	UPROPERTY(Meta = (BindWidget))
 		class UUW_Gameover* WB_GameOver;
@@ -45,4 +47,8 @@ private:
 
 	UPROPERTY(Meta = (BindWidget))
 		class UUW_ReturnReady* WB_ReturnReady;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UUW_WatchMode* WB_WatchMode;
+
 };
