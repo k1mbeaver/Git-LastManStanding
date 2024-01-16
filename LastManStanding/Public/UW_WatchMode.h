@@ -22,5 +22,5 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable)
-		void Quit();
+		void QuitTitle();
 };

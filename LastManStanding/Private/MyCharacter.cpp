@@ -230,8 +230,16 @@ void AMyCharacter::DanceComplete()
 	bCanMove = true;
 	CharacterAnim->StopAllMontages(true);
 
-	MyPC = Cast<AMyPlayerController>(GetController());
-	MyPC->DanceComplete();
+	//MyPC = Cast<AMyPlayerController>(GetController());
+
+/*
+	if (MyPC == nullptr)
+	{
+		MyPC = Cast<AMyPlayerController>(GetController());
+	}
+*/
+
+	//MyPC->DanceComplete();
 }
 
 void AMyCharacter::StopDancing()

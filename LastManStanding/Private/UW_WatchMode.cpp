@@ -13,7 +13,7 @@ void UUW_WatchMode::NativeOnInitialized()
 	BtQuit = Cast<UButton>(GetWidgetFromName(TEXT("BtQuit")));
 }
 
-void UUW_WatchMode::Quit()
+void UUW_WatchMode::QuitTitle()
 {
 	AMyPlayerController* MyPC = Cast<AMyPlayerController>(GetOwningPlayer());
 	if (MyPC)

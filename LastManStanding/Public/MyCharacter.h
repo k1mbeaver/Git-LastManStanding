@@ -64,6 +64,8 @@ public:
 
 	UPROPERTY(Replicated)
 		FString PlayerName;
+
+	bool bCanMove = true;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -73,7 +75,6 @@ private:
 		class UGameplayStatics* GameStatic;
 
 	bool IsAttacking = false;
-	bool bCanMove = true;
 
 public:	
 	AMyCharacter();

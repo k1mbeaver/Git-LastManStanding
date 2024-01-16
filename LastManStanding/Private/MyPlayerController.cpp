@@ -6,6 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "ABGameInstance.h"
+#include "ABAnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameMain_HUD.h"
 #include "MyCamera.h"
@@ -484,6 +485,21 @@ void AMyPlayerController::StopDancing()
 
 	if (myCharacter->CurrentState == EPlayerState::ALIVE)
 	{
+		if (myCharacter->bCanMove == true)
+		{
+			nMissionComplete++;
+
+			AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+			if (HUD == nullptr) return;
+
+			HUD->SetPlayerMissionClear(nMissionComplete);
+
+			if (nMissionComplete == 50)
+			{
+				bWinner = true;
+			}
+		}
+
 		StopDancingToServer(myCharacter);
 	}
 }
