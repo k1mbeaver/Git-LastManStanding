@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Net/UnrealNetwork.h"
 #include "PlayerSpawner.generated.h"
 
 UCLASS()
@@ -21,9 +20,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	int nSizePlayer = 0;
-	TArray<FVector> PlayerVector;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
+	AMyPlayerController* ServerPlayer;
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -35,8 +33,6 @@ public:
 		bool CanSpawn();
 
 	UFUNCTION(BlueprintCallable)
-		TArray<FVector> GetPlayerVector();
+		void GetPlayerVector(FVector getVec);
 
-	UFUNCTION(BlueprintCallable)
-		void SetPlayerVector(FVector GetVector);
 };

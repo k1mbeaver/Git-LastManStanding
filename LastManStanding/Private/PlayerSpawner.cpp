@@ -3,6 +3,8 @@
 
 #include "PlayerSpawner.h"
 #include "ABGameInstance.h"
+#include "Kismet/GameplayStatics.h"
+#include "MyPlayerController.h"
 
 // Sets default values
 APlayerSpawner::APlayerSpawner()
@@ -29,7 +31,12 @@ void APlayerSpawner::Tick(float DeltaTime)
 int APlayerSpawner::GetPlayerSize()
 {
 	UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
-	nSizePlayer = MyGI->GetServerPlayer("Default");
+	nSizePlayer = MyGI->GetServerPlayer("Player");
+
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController::StaticClass(), OutActors);
+
+	ServerPlayer = Cast<AMyPlayerController>(OutActors[0]);
 
 	return nSizePlayer;
 }
@@ -48,20 +55,7 @@ bool APlayerSpawner::CanSpawn()
 	}
 }
 
-TArray<FVector> APlayerSpawner::GetPlayerVector()
+void APlayerSpawner::GetPlayerVector(FVector getVec)
 {
-	return PlayerVector;
+	ServerPlayer->ServerSetPlayerVector(getVec);
 }
-
-void APlayerSpawner::SetPlayerVector(FVector GetVector)
-{
-	PlayerVector.Push(GetVector);
-}
-
-void APlayerSpawner::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	//DOREPLIFETIME(AMyCharacter, bCanRun);
-}
-

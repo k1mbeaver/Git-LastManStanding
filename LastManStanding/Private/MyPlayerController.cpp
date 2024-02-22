@@ -722,12 +722,17 @@ void AMyPlayerController::EnterGameReady(bool bServer)
 	HUD->InitServerUI(bServer);
 }
 
-void AMyPlayerController::ReadyStart()
+void AMyPlayerController::ServerSetPlayerVector(FVector getArrVector)
 {
-	ReadyStartToServer();
+	PlayerVector.Add(getArrVector);
 }
 
-void AMyPlayerController::ReadyStartToServer_Implementation()
+void AMyPlayerController::ReadyStart()
+{
+	ReadyStartToServer(PlayerVector);
+}
+
+void AMyPlayerController::ReadyStartToServer_Implementation(const TArray<FVector>& getVecArray)
 {
 	TArray<AActor*> OutActors;
 	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
@@ -740,13 +745,13 @@ void AMyPlayerController::ReadyStartToServer_Implementation()
 		if (PC)
 		{
 			// 서버에서 캐릭터의 위치를 정하고 클라이언트 들에게 그 위치에 설정하도록 하자
-			PC->ReadyStartToClient(nIndex, OutActors.Num());
+			PC->ReadyStartToClient(nIndex, OutActors.Num(), getVecArray[nIndex]);
 			nIndex++;
 		}
 	}
 }
 
-void AMyPlayerController::ReadyStartToClient_Implementation(int ServerNumber, int PlayerCount)
+void AMyPlayerController::ReadyStartToClient_Implementation(int ServerNumber, int PlayerCount, FVector getVector)
 {
 	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
 	if (HUD == nullptr) return;
@@ -756,10 +761,10 @@ void AMyPlayerController::ReadyStartToClient_Implementation(int ServerNumber, in
 		UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 
 		StartLocation = MyGI->GetLocation(ServerNumber);
-		myCharacter->SetActorLocation(StartLocation);
+		myCharacter->SetActorLocation(getVector);
 		DefaultCount = PlayerCount;
 		bStart = true;
-		StartCharacter(myCharacter, StartLocation, MyGI->GetPlayerMesh("Player"), MyGI->GetUserName("Player"));
+		StartCharacter(myCharacter, getVector, MyGI->GetPlayerMesh("Player"), MyGI->GetUserName("Player"));
 	}
 
 	HUD->HiddenGameReady();
@@ -844,4 +849,5 @@ void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AMyPlayerController, nMissionComplete);
 	DOREPLIFETIME(AMyPlayerController, bWinner);
 	DOREPLIFETIME(AMyPlayerController, nDefaultPlayer);
+	DOREPLIFETIME(AMyPlayerController, PlayerVector);
 }

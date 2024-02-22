@@ -34,6 +34,10 @@ private:
 	int nCurrentCamera = 0;
 	int nDefaultCamera = 0;
 	TArray<AActor*> CameraFoundActors;
+
+	UPROPERTY(Replicated)
+	TArray<FVector> PlayerVector; // 서버만 사용
+
 public:
 	UPROPERTY(Replicated)
 		int DeathCount = 1;
@@ -59,7 +63,6 @@ public:
 
 	UPROPERTY(Replicated)
 		FVector StartLocation;
-
 private:
 	void UpDown(float NewAxisValue);
 
@@ -159,10 +162,10 @@ public:
 	void ReadyStart();
 
 	UFUNCTION(Server, Unreliable)
-		void ReadyStartToServer();
+		void ReadyStartToServer(const TArray<FVector>& getVecArray);
 
 	UFUNCTION(Client, Unreliable)
-		void ReadyStartToClient(int ServerNumber, int PlayerCount);
+		void ReadyStartToClient(int ServerNumber, int PlayerCount, FVector getVector);
 
 	void SendMessage(const FText& Text);
 
@@ -192,4 +195,7 @@ public:
 	void EnterGameReady(bool bServer);
 	void DanceComplete();
 	void CameraChange();
+
+	// 서버 전용 함수
+	void ServerSetPlayerVector(FVector getVector);
 };
