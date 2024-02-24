@@ -61,8 +61,6 @@ public:
 	UPROPERTY(Replicated)
 		bool bWinner = false;
 
-	UPROPERTY(Replicated)
-		FVector StartLocation;
 private:
 	void UpDown(float NewAxisValue);
 

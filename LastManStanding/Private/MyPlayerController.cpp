@@ -760,7 +760,6 @@ void AMyPlayerController::ReadyStartToClient_Implementation(int ServerNumber, in
 	{
 		UABGameInstance* MyGI = Cast<UABGameInstance>(GetGameInstance());
 
-		StartLocation = MyGI->GetLocation(ServerNumber);
 		myCharacter->SetActorLocation(getVector);
 		DefaultCount = PlayerCount;
 		bStart = true;
@@ -844,7 +843,6 @@ void AMyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AMyPlayerController, DeathCount);
 	DOREPLIFETIME(AMyPlayerController, DefaultCount);
 	DOREPLIFETIME(AMyPlayerController, nPlayerNumber);
-	DOREPLIFETIME(AMyPlayerController, StartLocation);
 	DOREPLIFETIME(AMyPlayerController, bStart);
 	DOREPLIFETIME(AMyPlayerController, nMissionComplete);
 	DOREPLIFETIME(AMyPlayerController, bWinner);
